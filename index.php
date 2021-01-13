@@ -10,10 +10,11 @@ and open the template in the editor.
         <title></title>
     </head>
     <body>
-        aqui agora
+        
         <?php
         
         // put your code here
+        echo "teste";
         ?>
     </body>
 </html>
