@@ -29,23 +29,16 @@ class Model {
 
     /**
      * Abre conexão com banco de dados
-     * @return \PDO
+     * 
+     * @return PDO
+     * @throws Exception
      */
     protected static function openConnection() {
-
-        $dsn = DB_DSN;
-        $host = DB_HOST;
-        $dbname = DB_NAME;
-        $user = DB_USER;
-        $pass = DB_PASS;
-
-        $options = array(
-            PDO::ATTR_CASE => PDO::CASE_LOWER,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-        );
-
-        return new PDO("{$dsn}:host={$host};dbname={$dbname}", $user, $pass, $options);
+        try {
+            return new PDO(DB_DSN . ":host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PASS, unserialize(PDO_OPTIONS));
+        } catch (Exception $exc) {
+            throw $exc;
+        }
     }
 
 }

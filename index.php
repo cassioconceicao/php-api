@@ -1,6 +1,6 @@
 <?php
 
-/*
+/* 
  * Copyright (C) 2021 ctecinf.com.br
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,22 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-session_start();
+include 'html/index.php';
 
-/**
- * Configurar Conexão com o Banco de Dados<br>
- * DB_DSN: "mysql", "firebird" ou "postgresql"
- */
-define("DB_DSN", "mysql");
-define("DB_HOST", "localhost");
-define("DB_NAME", "hobby");
-define("DB_USER", "root");
-define("DB_PASS", "root");
-
-
-
-define("PDO_OPTIONS", serialize(array(
-    PDO::ATTR_CASE => PDO::CASE_LOWER,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-)));
+echo !isMobile();
