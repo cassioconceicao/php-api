@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * Copyright (C) 2021 ctecinf.com.br
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,8 @@
  */
 
 /**
- * Verifica se é tablet ou celular
+ * Verifica se é tablet / Telefone ou Desktop
+ * 
  * @return boolean
  */
 function isMobile() {
@@ -26,16 +27,62 @@ function isMobile() {
 }
 
 /**
- * Retorna o cabeçalho HTML
+ * Retorna uma <i>String</i> com um cabeçalho HTML de título e <i>charset</i>
+ * 
  * @param string $theme DEFAULT "base"
  * @return string HTML
  */
-function getHTMLHead($title = "", $theme = "base", $charset = "UTF-8") {
-    return "<meta charset=\"{$charset}\">
-        <title>{$title}</title>
-        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
-        <link type=\"text/css\" rel=\"stylesheet\" href=\"" . JQUERY_PATH . "ui/1.12.1/themes/{$theme}/jquery-ui.min.css\"/>
-        <script type=\"text/javascript\" src=\"" . JQUERY_PATH . "jquery-1.12.4.min.js\"></script>
-        <script type=\"text/javascript\" src=\"" . JQUERY_PATH . "ui/1.12.1/jquery-ui.min.js\"></script>
-        ";
+function getHTMLHead($title = "", $charset = "UTF-8") {
+
+    $html = "<meta charset=\"{$charset}\">";
+    $html .= "<title>{$title}</title>";
+    $html .= "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">";
+
+    return $html;
+}
+
+/**
+ * Retorna uma <i>String</i> com um elemento <i>input</i> HTML com <i>label</i> associado
+ * 
+ * @param string $name Nome e ID do <i>input</i>
+ * @param string $label Rótulo do <i>input</i>
+ * @param mixed $value Valor
+ * @return string HTML
+ * @throws InvalidArgumentException
+ */
+function makeInput($name, $label, $value = null, $type = false) {
+
+    if (!$type && isset($value)) {
+        $type = gettype($value);
+    } else if (!$type) {
+        $type = 'string';
+    }
+
+    $html = "<label for=\"{$name}\">{$label}</label>\n";
+
+    switch ($type) {
+
+        case 'boolean':
+            $input_type = 'checkbox';
+            break;
+        case 'integer':
+            $input_type = 'number';
+            break;
+        case 'double':
+            $input_type = 'number';
+            $step = " step=\"any\"";
+            break;
+        case 'string':
+            $input_type = 'text';
+            break;
+        case 'object':
+            $input_type = 'text';
+            break;
+        default:
+            throw new InvalidArgumentException($value);
+    }
+
+    $html .= "<input name=\"{$name}\" id=\"{$name}\" type=\"{$input_type}\"{$step} value=\"{$value}\" />\n\n";
+
+    return $html;
 }

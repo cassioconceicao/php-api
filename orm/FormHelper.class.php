@@ -17,25 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-session_start();
-
 /**
- * Configurar Conexão com o Banco de Dados<br>
- * DB_DSN: "mysql", "firebird" ou "postgresql"
+ * Description of FormHelper
+ *
+ * @author Cássio Conceição
+ * @since 2021
+ * @version 2021
+ * @see http://ctecinf.com.br/
  */
-define("DB_DSN", "mysql");
-define("DB_HOST", "localhost");
-define("DB_NAME", "hobby");
-define("DB_USER", "root");
-define("DB_PASS", "root");
-
-define("PDO_OPTIONS", serialize(array(
-    PDO::ATTR_CASE => PDO::CASE_LOWER,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-)));
-
-/**
- * Nome do diretório com as classes modelos que extendem de Model.class.php
- */
-define("MODEL_DIR", "model");
+class FormHelper {
+    //put your code here
+}

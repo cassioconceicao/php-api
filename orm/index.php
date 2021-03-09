@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * Copyright (C) 2021 ctecinf.com.br
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,13 +18,14 @@
  */
 
 /**
- * *********** NÃO EDITAR *************************************************************
+ * *********** NÃO EDITAR ******************************************************
  */
+$ormDir = "orm";
 $path = ".." . DIRECTORY_SEPARATOR;
 
 foreach (array_reverse(explode(DIRECTORY_SEPARATOR, dirname($_SERVER["PHP_SELF"]))) as $dir) {
-    if (is_dir($path . $dir . DIRECTORY_SEPARATOR . "orm")) {
-        $path = $path . $dir . DIRECTORY_SEPARATOR . "orm" . DIRECTORY_SEPARATOR;
+    if (is_dir($path . $dir . DIRECTORY_SEPARATOR . $ormDir)) {
+        $path = $path . $dir . DIRECTORY_SEPARATOR . $ormDir . DIRECTORY_SEPARATOR;
         break;
     } else {
         $path = ".." . DIRECTORY_SEPARATOR . $path;
@@ -33,4 +34,24 @@ foreach (array_reverse(explode(DIRECTORY_SEPARATOR, dirname($_SERVER["PHP_SELF"]
 
 require_once "{$path}Config.php";
 require_once "{$path}Model.class.php";
-// *********************************************************************************
+require_once "{$path}FormHelper.class.php";
+
+$path = ".." . DIRECTORY_SEPARATOR;
+
+foreach (array_reverse(explode(DIRECTORY_SEPARATOR, dirname($_SERVER["PHP_SELF"]))) as $dir) {
+    if (is_dir($path . $dir . DIRECTORY_SEPARATOR . MODEL_DIR)) {
+        $path = $path . $dir . DIRECTORY_SEPARATOR . MODEL_DIR . DIRECTORY_SEPARATOR;
+        break;
+    } else {
+        $path = ".." . DIRECTORY_SEPARATOR . $path;
+    }
+}
+
+$dir = dir($path);
+while (($file = $dir->read()) !== false) {
+    if (is_file($path . '/' . $file) and preg_match('/^(.+)\.php$/i', $file)) {
+        require_once($path . '/' . $file);
+    }
+}
+$dir->close();
+// *****************************************************************************

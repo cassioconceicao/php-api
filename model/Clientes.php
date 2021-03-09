@@ -17,25 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-session_start();
+require '../orm/index.php';
 
 /**
- * Configurar Conexão com o Banco de Dados<br>
- * DB_DSN: "mysql", "firebird" ou "postgresql"
+ * Description of Cliente
+ *
+ * @author cassio
  */
-define("DB_DSN", "mysql");
-define("DB_HOST", "localhost");
-define("DB_NAME", "hobby");
-define("DB_USER", "root");
-define("DB_PASS", "root");
+class Clientes extends Model {
+    //put your code here
+}
 
-define("PDO_OPTIONS", serialize(array(
-    PDO::ATTR_CASE => PDO::CASE_LOWER,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-)));
+echo "<pre>";
 
-/**
- * Nome do diretório com as classes modelos que extendem de Model.class.php
- */
-define("MODEL_DIR", "model");
+var_dump($_SESSION);
+
+try {
+    foreach (Clientes::find() as $cliente) {
+        echo $cliente->getValue("nome") . "<br>";
+    }
+} catch (Exception $exc) {
+    echo $exc->getMessage();
+}
