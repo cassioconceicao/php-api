@@ -27,6 +27,17 @@
  */
 class Model {
 
+    const STRING = 0;
+    const BOOLEAN = 1;
+    const TEXT = 2;
+    const DATE = 3;
+    const TIME = 4;
+    const TIMESTAMP = 5;
+    const DECIMAL = 6;
+    const TINYINT = 7;
+    const INTEGER = 8;
+    const BIGINT = 9;
+
     /**
      * Dados das colunas da tabela
      * @var type array
@@ -34,18 +45,12 @@ class Model {
     protected $data;
 
     /**
-     * Tipo de dados das colunas da tabela
-     * @var type array
-     */
-    protected $type;
-
-    /**
      * Abre conexão com banco de dados
      * 
      * @return PDO
      * @throws Exception
      */
-    protected static function openConnection() {
+    protected function openConnection() {
         try {
             return new PDO(DB_DSN . ":host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PASS, unserialize(PDO_OPTIONS));
         } catch (Exception $exc) {
@@ -58,14 +63,13 @@ class Model {
      * 
      * @param string $class Nome da classe
      * @return string Nome da tabela no banco de dados
+     * @throws Exception
      */
-    protected static function getTable($class = false) {
+    protected function getTableName() {
 
-        if (!$class) {
-            $class = get_called_class();
-        }
+        $class = get_called_class();
 
-        if (!isset($_SESSION["meta"][$class]["table_name"])) {
+        if (!isset($_SESSION["metadata"][$class])) {
 
             $reflection = new ReflectionClass($class);
 
@@ -79,10 +83,131 @@ class Model {
                 }
             }
 
-            $_SESSION["meta"][$class]["table_name"] = $name;
+            $_SESSION["metadata"][$class]["table_name"] = $name;
+            self::setColumns($class, $name);
         }
 
-        return $_SESSION["meta"][$class]["table_name"];
+        return $_SESSION["metadata"][$class]["table_name"];
+    }
+
+    /**
+     * Configura colunas da tabela
+     * 
+     * @param Class $class
+     * @param string $table
+     * @throws Exception
+     */
+    private function setColumns($class, $table) {
+
+        $conn = self::openConnection();
+
+        $query = "SELECT * FROM {$table} LIMIT 1";
+        $st = $conn->query($query);
+        $err = $st->errorInfo();
+        if ($err[2]) {
+            throw new Exception($err[2]);
+        }
+
+        self::setPrimaryKeyPGSQL($class, $table, $conn);
+
+        $columns = array();
+        for ($index = 0; $index < $st->columnCount(); $index++) {
+
+            if (strpos(serialize($st->getColumnMeta($index)), "primary_key")) {
+                $_SESSION["metadata"][$class]["primary_key"] = $st->getColumnMeta($index)["name"];
+            }
+
+            $columns[$st->getColumnMeta($index)["name"]] = self::parseType($st->getColumnMeta($index)["native_type"]);
+        }
+
+        $_SESSION["metadata"][$class]["columns"] = $columns;
+    }
+
+    /**
+     * Configura padrão de tipos de dados
+     * 
+     * @param string $type
+     * @return string
+     */
+    private function parseType($type) {
+
+        switch (strtolower($type)) {
+
+            case "bool":
+            case "boolean":
+                return Model::BOOLEAN;
+
+            case "int2":
+            case "tiny":
+            case "short":
+                return Model::TINYINT;
+
+            case "int4":
+            case "long":
+                return Model::INTEGER;
+
+            case "int8":
+            case "longlong":
+                return Model::BIGINT;
+
+            case "float":
+            case "float2":
+            case "float4":
+            case "float8":
+            case "numeric":
+            case "real":
+            case "double":
+            case "newdecimal":
+                return Model::DECIMAL;
+
+            case "text":
+            case "blob":
+            case "lob":
+                return Model::TEXT;
+
+            case "date":
+                return Model::DATE;
+
+            case "time":
+                return Model::TIME;
+
+            case "timestamp":
+            case "datetime":
+                return Model::TIMESTAMP;
+
+            default:
+                return Model::STRING;
+        }
+    }
+
+    /**
+     * Verifica se Postegres e configura chave primária
+     * 
+     * @param type $class
+     * @param type $table
+     * @param type $conn
+     * @throws Exception
+     */
+    private function setPrimaryKeyPGSQL($class, $table, $conn) {
+
+        if (DB_DSN == "pgsql") {
+
+            $query = "SELECT c.column_name
+                FROM information_schema.table_constraints tc 
+                JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) 
+                JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema
+                AND tc.table_name = c.table_name AND ccu.column_name = c.column_name
+                WHERE constraint_type = 'PRIMARY KEY' and c.table_name = '{$table}'";
+
+            $st = $conn->query($query);
+
+            $err = $st->errorInfo();
+            if ($err[2]) {
+                throw new Exception($err[2]);
+            }
+
+            $_SESSION["metadata"][$class]["primary_key"] = $st->fetchColumn();
+        }
     }
 
     /**
@@ -94,7 +219,7 @@ class Model {
      * 
      * @throws Exception
      */
-    protected static function executeUpdate($sql, $params = array()) {
+    protected function executeUpdate($sql, $params = array()) {
 
         $conn = self::openConnection();
 
@@ -125,7 +250,7 @@ class Model {
      * 
      * @throws Exception
      */
-    protected static function executeQuery($query) {
+    protected function executeQuery($query) {
 
         $conn = self::openConnection();
 
@@ -146,7 +271,7 @@ class Model {
      * @param array $value
      * @return Model
      */
-    protected static function makeObject($value, $type) {
+    protected function makeObject($value) {
 
         $class = new ReflectionClass(get_called_class());
         $instance = $class->newInstanceWithoutConstructor();
@@ -155,51 +280,85 @@ class Model {
         $prop1->setAccessible(true);
         $prop1->setValue($instance, $value);
 
-        $prop2 = $class->getProperty("type");
-        $prop2->setAccessible(true);
-        $prop2->setValue($instance, $type);
-
         return $instance;
     }
 
+    /**
+     * Pega valor da coluna
+     * 
+     * @param string $name
+     * @return mixed
+     */
     public function getValue($name) {
         return $this->data[$name];
     }
 
+    /**
+     * Configura valor da coluna
+     * 
+     * @param string $name
+     * @param mixed $value
+     */
     public function setValue($name, $value) {
-        return $this->data[$name] = $value;
+        $this->data[$name] = $value;
     }
 
-    public function getType($name) {
-        return $this->type[$name];
-    }
+    /**
+     * Consulta por ID
+     * 
+     * @param int $id
+     * @return Model
+     */
+    public static function findById($id) {
 
-    public static function find() {
+        $class = get_called_class();
 
-        $table = self::getTable();
-        $conn = self::openConnection();
-        $query = "SELECT * FROM {$table}";
-
-        $st = $conn->query($query);
-        $err = $st->errorInfo();
-        if ($err[2]) {
-            throw new Exception($err[2]);
+        if (!isset($_SESSION["metadata"][$class])) {
+            self::getTableName();
         }
 
-        $type = array();
-        for ($index = 0; $index < $st->columnCount(); $index++) {
-            
-            var_dump($st->getColumnMeta($index));
-            
-            $type[$st->getColumnMeta($index)["name"]] = $st->getColumnMeta($index)["native_type"];
+        return self::find($id, $_SESSION["metadata"][$class]["primary_key"]);
+    }
+
+    /**
+     * Consulta
+     * 
+     * @param string $filter
+     * @param array $columns
+     * @return array
+     */
+    public static function find($filter = false, $columns = false) {
+
+        $class = get_called_class();
+        $table = self::getTableName();
+        $pkColumn = $_SESSION["metadata"][$class]["primary_key"];
+
+        $query = "SELECT * FROM {$table}";
+
+        if ($filter && !$columns) {
+            $columns = array_keys($_SESSION["metadata"][$class]["columns"]);
+        }
+
+        if (is_array($columns)) {
+
+            $query .= " WHERE ";
+
+            $cols = array();
+            foreach ($columns as $column) {
+                $cols[] = "{$column} LIKE '$filter%'";
+            }
+
+            $query .= implode(" OR ", $cols);
+        } else if ($columns) {
+            $query .= " WHERE {$columns} = '{$filter}'";
         }
 
         $rs = array();
-        foreach ($st->fetchAll() as $value) {
-            $rs[] = self::makeObject($value, $type);
+        foreach (self::executeQuery($query) as $row) {
+            $rs[$row[$pkColumn]] = self::makeObject($row);
         }
 
-        return $rs;
+        return count($rs) == 0 ? false : (count($rs) == 1 ? $rs[array_keys($rs)[0]] : $rs);
     }
 
 }

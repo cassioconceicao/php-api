@@ -34,7 +34,6 @@ foreach (array_reverse(explode(DIRECTORY_SEPARATOR, dirname($_SERVER["PHP_SELF"]
 
 require_once "{$path}Config.php";
 require_once "{$path}Model.class.php";
-require_once "{$path}FormHelper.class.php";
 
 $path = ".." . DIRECTORY_SEPARATOR;
 

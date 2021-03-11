@@ -21,13 +21,19 @@ session_start();
 
 /**
  * Configurar Conexão com o Banco de Dados<br>
- * DB_DSN: "mysql", "firebird" ou "postgresql"
+ * DB_DSN: "mysql" ou "pgsql"
  */
 define("DB_DSN", "mysql");
 define("DB_HOST", "localhost");
 define("DB_NAME", "hobby");
 define("DB_USER", "root");
 define("DB_PASS", "root");
+
+//define("DB_DSN", "pgsql");
+//define("DB_HOST", "localhost");
+//define("DB_NAME", "hobby");
+//define("DB_USER", "postgres");
+//define("DB_PASS", "postgres");
 
 define("PDO_OPTIONS", serialize(array(
     PDO::ATTR_CASE => PDO::CASE_LOWER,

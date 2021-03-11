@@ -24,18 +24,16 @@ require '../orm/index.php';
  *
  * @author cassio
  */
-class Clientes extends Model {
+class Cliente extends Model {
     //put your code here
 }
 
 echo "<pre>";
 
 var_dump($_SESSION);
-
+unset($_SESSION);
 try {
-    foreach (Clientes::find() as $cliente) {
-        echo $cliente->getValue("nome") . "<br>";
-    }
+    var_dump(Cliente::find(3));
 } catch (Exception $exc) {
     echo $exc->getMessage();
 }
