@@ -17,14 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+require '../orm/index.php';
+
 /**
- * Description of FormHelper
+ * Description of Municipio
  *
- * @author Cássio Conceição
- * @since 2021
- * @version 2021
- * @see http://ctecinf.com.br/
+ * @author cassio
  */
-class FormHelper {
+class Municipio extends Model {
     //put your code here
 }

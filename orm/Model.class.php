@@ -65,9 +65,11 @@ class Model {
      * @return string Nome da tabela no banco de dados
      * @throws Exception
      */
-    protected function getTableName() {
+    protected function getTableName($class = false) {
 
-        $class = get_called_class();
+        if (!$class) {
+            $class = get_called_class();
+        }
 
         if (!isset($_SESSION["metadata"][$class])) {
 
@@ -105,7 +107,7 @@ class Model {
         $st = $conn->query($query);
         $err = $st->errorInfo();
         if ($err[2]) {
-            throw new Exception($err[2]);
+            throw new Exception("Erro ao carregar metadados de colunas: [{$err[2]}]");
         }
 
         self::setPrimaryKeyPGSQL($class, $table, $conn);
@@ -192,21 +194,33 @@ class Model {
 
         if (DB_DSN == "pgsql") {
 
-            $query = "SELECT c.column_name
-                FROM information_schema.table_constraints tc 
-                JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) 
-                JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema
-                AND tc.table_name = c.table_name AND ccu.column_name = c.column_name
-                WHERE constraint_type = 'PRIMARY KEY' and c.table_name = '{$table}'";
+            $query = "SELECT c.column_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type = 'PRIMARY KEY' and c.table_name = '{$table}'";
 
             $st = $conn->query($query);
 
             $err = $st->errorInfo();
             if ($err[2]) {
-                throw new Exception($err[2]);
+                throw new Exception("Erro ao carregar metadados de chave primária: [{$err[2]}]");
             }
 
             $_SESSION["metadata"][$class]["primary_key"] = $st->fetchColumn();
+        }
+    }
+
+    private function setForeignKeys($class, $table, $conn) {
+
+        if (DB_DSN == "mysql") {
+
+            $query = "SELECT * FROM information_schema.KEY_COLUMN_USAGE WHERE information_schema.KEY_COLUMN_USAGE.TABLE_NAME = '{$table}' AND information_schema.KEY_COLUMN_USAGE.REFERENCED_TABLE_NAME IS NOT NULL";
+
+            $st = $conn->query($query);
+
+            $err = $st->errorInfo();
+            if ($err[2]) {
+                throw new Exception("Erro ao carregar metadados de chave extrangeira: [{$err[2]}]");
+            }
+        } else if (DB_DSN == "pgsql") {
+            
         }
     }
 
@@ -228,7 +242,7 @@ class Model {
         $err1 = $st->errorInfo();
 
         if ($err1[2]) {
-            throw new Exception($err1[2]);
+            throw new Exception("Erro ao preparar SQL: [{$err[2]}]");
         }
 
         $rs = $st->execute($params);
@@ -236,7 +250,7 @@ class Model {
         $err2 = $st->errorInfo();
 
         if ($err2[2]) {
-            throw new Exception($err2[2]);
+            throw new Exception("Erro ao executar SQL: [{$err[2]}]");
         }
 
         return $rs;
@@ -259,7 +273,7 @@ class Model {
         $err = $st->errorInfo();
 
         if ($err[2]) {
-            throw new Exception($err[2]);
+            throw new Exception("Erro na consulta: [{$err[2]}]");
         }
 
         return $st->fetchAll();
@@ -271,7 +285,7 @@ class Model {
      * @param array $value
      * @return Model
      */
-    protected function makeObject($value) {
+    private function makeObject($value) {
 
         $class = new ReflectionClass(get_called_class());
         $instance = $class->newInstanceWithoutConstructor();
@@ -289,7 +303,7 @@ class Model {
      * @param string $name
      * @return mixed
      */
-    public function getValue($name) {
+    public function get($name) {
         return $this->data[$name];
     }
 
@@ -299,7 +313,7 @@ class Model {
      * @param string $name
      * @param mixed $value
      */
-    public function setValue($name, $value) {
+    public function set($name, $value) {
         $this->data[$name] = $value;
     }
 
@@ -333,7 +347,7 @@ class Model {
         $table = self::getTableName();
         $pkColumn = $_SESSION["metadata"][$class]["primary_key"];
 
-        $query = "SELECT * FROM {$table}";
+        $query = "SELECT {$table}.* FROM {$table}";
 
         if ($filter && !$columns) {
             $columns = array_keys($_SESSION["metadata"][$class]["columns"]);
@@ -352,7 +366,7 @@ class Model {
         } else if ($columns) {
             $query .= " WHERE {$columns} = '{$filter}'";
         }
-
+        echo $query;
         $rs = array();
         foreach (self::executeQuery($query) as $row) {
             $rs[$row[$pkColumn]] = self::makeObject($row);
