@@ -17,17 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require '../orm/index.php';
+$term = $_GET["term"];
 
-/**
- * Description of Municipio
- *
- * @author cassio
- */
-class Municipio extends Model {
-    //put your code here
-    
-    public function __toString() {
-        return $this->get("descricao");
-    }
-}
+$arr = array(
+    array(
+        "value" => "1",
+        "label" => "Rubens"
+    )
+);
+
+
+echo json_encode($arr);
