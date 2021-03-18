@@ -343,10 +343,10 @@ class Model {
             try {
 
                 $name = $_SESSION["metadata"][$class]["foreign_key"][$column];
-                
+
                 $class = new ReflectionClass($name);
                 $instance = $class->newInstanceWithoutConstructor();
-                
+
                 return $instance->findById($this->data[$column]);
             } catch (Exception $exc) {
                 throw new Exception("Classe modelo não encontrada para a tabela.$exc");
@@ -375,7 +375,7 @@ class Model {
     public static function findById($id) {
 
         $class = get_called_class();
-        
+
         if (!isset($_SESSION["metadata"][$class])) {
             self::getTableName();
         }
@@ -416,6 +416,35 @@ class Model {
         return $rs;
     }
 
+    public static function listnerAutoCompleteSearch() {
+
+        if (isset($_POST["term"])) {
+
+            $class = new ReflectionClass(get_called_class());
+            $instance = $class->newInstanceWithoutConstructor();
+
+            $rs = $instance->find($_POST["term"], 8);
+            $list = array();
+
+            if (is_array($rs)) {
+
+                foreach ($rs as $row) {
+                    $list[] = array(
+                        "value" => $row->getId(),
+                        "label" => strval($row)
+                    );
+                }
+            } else {
+                $list[] = array(
+                    "value" => $rs->getId(),
+                    "label" => strval($rs)
+                );
+            }
+
+            die(json_encode($list));
+        }
+    }
+
     /**
      * Consulta
      * 
@@ -443,7 +472,7 @@ class Model {
 
             $cols = array();
             foreach ($columns as $column) {
-                $cols[] = "{$table}.{$column} LIKE '$filter%'";
+                $cols[] = "LOWER({$table}.{$column}) LIKE '" . strtolower($filter) . "%'";
             }
 
             $query .= implode(" OR ", $cols);
@@ -451,10 +480,10 @@ class Model {
             $query .= " WHERE {$table}.{$columns} = '{$filter}'";
         }
 
-        if($limit > 0) {
+        if ($limit > 0) {
             $query .= " LIMIT {$limit}";
         }
-        
+
         $rs = array();
         foreach (self::executeQuery($query) as $row) {
             $rs[$row[$pkColumn]] = self::makeObject($row);
