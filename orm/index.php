@@ -32,6 +32,8 @@ foreach (array_reverse(explode(DIRECTORY_SEPARATOR, dirname($_SERVER["PHP_SELF"]
     }
 }
 
+define("ORM_PATH", $path);
+
 require_once "{$path}Config.php";
 require_once "{$path}Model.class.php";
 
@@ -46,13 +48,13 @@ foreach (array_reverse(explode(DIRECTORY_SEPARATOR, dirname($_SERVER["PHP_SELF"]
     }
 }
 
+define("MODEL_PATH", $path);
+
 $dir = dir($path);
 while (($file = $dir->read()) !== false) {
-    if (is_file($path . '/' . $file) and preg_match('/^(.+)\.php$/i', $file)) {
+    if (is_file($path . '/' . $file) and preg_match('/^(.+)\.php$/i', $file) and ! strpos($file, "AutoComplete.php")) {
         require_once($path . '/' . $file);
     }
 }
 $dir->close();
 // *****************************************************************************
-
-        

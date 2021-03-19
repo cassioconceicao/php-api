@@ -416,35 +416,6 @@ class Model {
         return $rs;
     }
 
-    public static function listnerAutoCompleteSearch() {
-
-        if (isset($_POST["term"])) {
-
-            $class = new ReflectionClass(get_called_class());
-            $instance = $class->newInstanceWithoutConstructor();
-
-            $rs = $instance->find($_POST["term"], 8);
-            $list = array();
-
-            if (is_array($rs)) {
-
-                foreach ($rs as $row) {
-                    $list[] = array(
-                        "value" => $row->getId(),
-                        "label" => strval($row)
-                    );
-                }
-            } else {
-                $list[] = array(
-                    "value" => $rs->getId(),
-                    "label" => strval($rs)
-                );
-            }
-
-            die(json_encode($list));
-        }
-    }
-
     /**
      * Consulta
      * 

@@ -1,0 +1,44 @@
+<script type="text/javascript">
+
+    function search$class(term) {
+
+        var sel = document.getElementById('$name_list');
+
+        if (term.length > 0) {
+
+            sel.innerHTML = "";
+            sel.setAttribute('style', 'display:none');
+
+            var ajax = typeof XMLHttpRequest !== 'undefined' ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+            ajax.open('POST', '$url');
+            ajax.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            ajax.responseType = 'json';
+
+            ajax.onreadystatechange = function () {
+                if (this.readyState === 4 && this.status === 200) {
+                    var options = "";
+                    for (const op of ajax.response) {
+                        options += "<option value=" + op.value + ">" + op.label + "</option>";
+                    }
+                    sel.innerHTML = options;
+                    sel.setAttribute('style', 'display:block');
+                } else {
+                    sel.setAttribute('style', 'display:none');
+                }
+            };
+
+            ajax.send('term=' + term);
+        } else {
+            sel.setAttribute('style', 'display:none');
+        }
+    }
+
+    function setSeleceted$class(sel) {
+        sel.setAttribute('style', 'display:none');
+        document.getElementById('$name').value = sel.value;
+        document.getElementById('$name_label').value = sel.options[sel.selectedIndex].text;
+    }
+</script>
+<input id="$name_label" onkeyup="search$class(this.value)" />
+<input type="hidden" id="$name" name="$name" />
+<select id="$name_list" multiple style="display: none" ondblclick="setSeleceted$class(this)"></select>
