@@ -37,7 +37,6 @@ define("ORM_PATH", $path);
 require_once "{$path}Config.php";
 require_once "{$path}Model.class.php";
 
-
 $path = ".." . DIRECTORY_SEPARATOR;
 
 foreach (array_reverse(explode(DIRECTORY_SEPARATOR, dirname($_SERVER["PHP_SELF"]))) as $dir) {
@@ -71,7 +70,4 @@ while (($file = $dir->read()) !== false) {
     }
 }
 $dir->close();
-
-
-
 // *****************************************************************************

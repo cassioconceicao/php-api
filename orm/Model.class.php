@@ -463,4 +463,20 @@ class Model {
         return count($rs) == 0 ? false : (count($rs) == 1 ? $rs[array_keys($rs)[0]] : $rs);
     }
 
+    /**
+     * Cria ou altera registro no banco de dados
+     * 
+     * @param array $params
+     */
+    public function save($params) {
+        
+    }
+
+    /**
+     * Apaga registro
+     */
+    public function delete() {
+        
+    }
+
 }
