@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2021 ctecinf.com.br
  *
@@ -22,8 +23,8 @@ $name = "municipio_id";
 $reflection = new ReflectionClass(Municipio::class);
 
 $class = $reflection->getName();
-$url = str_replace($_SERVER["DOCUMENT_ROOT"], "http://localhost", str_replace($class, $class . "AutoComplete", $reflection->getFileName()));
-$fileName = str_replace($class, $class . "AutoComplete", $reflection->getFileName());
+$url = str_replace($_SERVER["DOCUMENT_ROOT"], "http://".$_SERVER["SERVER_NAME"], str_replace($class, $class . "AutoComplete", str_replace("/" . MODEL_DIR . "/", "/" . CONTROLLER_DIR . "/", $reflection->getFileName())));
+$fileName = str_replace($class, $class . "AutoComplete", str_replace("/" . MODEL_DIR . "/", "/" . CONTROLLER_DIR . "/", $reflection->getFileName()));
 
 if (!file_exists($fileName)) {
     $handle = fopen($fileName, "w");
@@ -34,4 +35,3 @@ if (!file_exists($fileName)) {
 $content = file_get_contents(ORM_PATH . "AutoCompleteField.txt");
 $html = str_replace("\$url", $url, str_replace("\$name", $name, str_replace("\$class", $class, $content)));
 echo $html;
-

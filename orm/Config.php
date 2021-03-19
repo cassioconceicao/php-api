@@ -45,3 +45,8 @@ define("PDO_OPTIONS", serialize(array(
  * Nome do diretório com as classes modelos que extendem de Model.class.php
  */
 define("MODEL_DIR", "model");
+
+/**
+ * Nome do diretório de controle das modelos
+ */
+define("CONTROLLER_DIR", "controller");

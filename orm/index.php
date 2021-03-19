@@ -37,6 +37,20 @@ define("ORM_PATH", $path);
 require_once "{$path}Config.php";
 require_once "{$path}Model.class.php";
 
+
+$path = ".." . DIRECTORY_SEPARATOR;
+
+foreach (array_reverse(explode(DIRECTORY_SEPARATOR, dirname($_SERVER["PHP_SELF"]))) as $dir) {
+    if (is_dir($path . $dir . DIRECTORY_SEPARATOR . CONTROLLER_DIR)) {
+        $path = $path . $dir . DIRECTORY_SEPARATOR . CONTROLLER_DIR . DIRECTORY_SEPARATOR;
+        break;
+    } else {
+        $path = ".." . DIRECTORY_SEPARATOR . $path;
+    }
+}
+
+define("CONTROLLER_PATH", $path);
+
 $path = ".." . DIRECTORY_SEPARATOR;
 
 foreach (array_reverse(explode(DIRECTORY_SEPARATOR, dirname($_SERVER["PHP_SELF"]))) as $dir) {
@@ -57,4 +71,7 @@ while (($file = $dir->read()) !== false) {
     }
 }
 $dir->close();
+
+
+
 // *****************************************************************************
