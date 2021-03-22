@@ -40,13 +40,3 @@ define("PDO_OPTIONS", serialize(array(
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
 )));
-
-/**
- * Nome do diretório com as classes modelos que extendem de Model.class.php
- */
-define("MODEL_DIR", "model");
-
-/**
- * Nome do diretório de controle das modelos
- */
-define("CONTROLLER_DIR", "controller");

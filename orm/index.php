@@ -32,40 +32,25 @@ foreach (array_reverse(explode(DIRECTORY_SEPARATOR, dirname($_SERVER["PHP_SELF"]
     }
 }
 
+/**
+ * Define PATH
+ */
 define("ORM_PATH", $path);
+define("MODEL_PATH", "{$path}model/");
+define("CONTROLLER_PATH", "{$path}controller/");
 
+/**
+ * Incluí configuração e superclasse das modelos
+ */
 require_once "{$path}Config.php";
 require_once "{$path}Model.class.php";
 
-$path = ".." . DIRECTORY_SEPARATOR;
-
-foreach (array_reverse(explode(DIRECTORY_SEPARATOR, dirname($_SERVER["PHP_SELF"]))) as $dir) {
-    if (is_dir($path . $dir . DIRECTORY_SEPARATOR . CONTROLLER_DIR)) {
-        $path = $path . $dir . DIRECTORY_SEPARATOR . CONTROLLER_DIR . DIRECTORY_SEPARATOR;
-        break;
-    } else {
-        $path = ".." . DIRECTORY_SEPARATOR . $path;
-    }
-}
-
-define("CONTROLLER_PATH", $path);
-
-$path = ".." . DIRECTORY_SEPARATOR;
-
-foreach (array_reverse(explode(DIRECTORY_SEPARATOR, dirname($_SERVER["PHP_SELF"]))) as $dir) {
-    if (is_dir($path . $dir . DIRECTORY_SEPARATOR . MODEL_DIR)) {
-        $path = $path . $dir . DIRECTORY_SEPARATOR . MODEL_DIR . DIRECTORY_SEPARATOR;
-        break;
-    } else {
-        $path = ".." . DIRECTORY_SEPARATOR . $path;
-    }
-}
-
-define("MODEL_PATH", $path);
-
-$dir = dir($path);
+/**
+ * Incluí classes modelos
+ */
+$dir = dir(MODEL_PATH);
 while (($file = $dir->read()) !== false) {
-    if (is_file($path . '/' . $file) and preg_match('/^(.+)\.php$/i', $file) and ! strpos($file, "AutoComplete.php")) {
+    if (is_file($path . '/' . $file) and preg_match('/^(.+)\.php$/i', $file)) {
         require_once($path . '/' . $file);
     }
 }
