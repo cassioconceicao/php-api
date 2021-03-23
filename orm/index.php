@@ -52,6 +52,10 @@ if ($handle) {
 }
 // *****************************************************************************
 
+define("ACTION_SAVE", "save");
+define("ACTION_DELETE", "delete");
+define("ACTION_FIND", "find");
+
 /**
  * Funções para controller
  */
