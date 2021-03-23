@@ -40,12 +40,12 @@ require_once "{$path}Model.class.php";
 
 if (isset($_GET["create"])) {
 
-    if(DB_DSN == "pgsql") {
+    if (DB_DSN == "pgsql") {
         $query = "SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE' AND table_schema NOT IN ('pg_catalog', 'information_schema')";
     } else {
         $query = "SHOW TABLES";
     }
-    
+
     $pdo = new PDO(DB_DSN . ":host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PASS, unserialize(PDO_OPTIONS));
     $st = $pdo->query($query);
     $rs = $st->fetchAll();
