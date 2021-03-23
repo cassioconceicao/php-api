@@ -38,19 +38,55 @@ define("CONTROLLER_PATH", "{$path}controller/");
 require_once "{$path}Config.php";
 require_once "{$path}Model.class.php";
 
-/**
- * Incluí classes modelos
- */
-$handle = opendir(MODEL_PATH);
-if ($handle) {
-    while (false !== ($file = readdir($handle))) {
-        if ($file != "." && $file != "..") {
-            require_once MODEL_PATH . $file;
-        }
+if (isset($_GET["create"])) {
+
+    if(DB_DSN == "pgsql") {
+        $query = "SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE' AND table_schema NOT IN ('pg_catalog', 'information_schema')";
+    } else {
+        $query = "SHOW TABLES";
     }
-    closedir($handle);
+    
+    $pdo = new PDO(DB_DSN . ":host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PASS, unserialize(PDO_OPTIONS));
+    $st = $pdo->query($query);
+    $rs = $st->fetchAll();
+
+    foreach ($rs as $row) {
+
+        $table = trim($row[array_keys($row)[0]]);
+        $name = "";
+        $isUpper = true;
+
+        foreach (str_split($table) as $c) {
+
+            if ($c == "_") {
+                $isUpper = true;
+            } else {
+                if ($isUpper) {
+                    $name .= strtoupper($c);
+                    $isUpper = false;
+                } else {
+                    $name .= strtolower($c);
+                }
+            }
+        }
+
+        echo $name;
+    }
+} else {
+
+    /**
+     * Incluí classes modelos
+     */
+    $handle = opendir(MODEL_PATH);
+    if ($handle) {
+        while (false !== ($file = readdir($handle))) {
+            if ($file != "." && $file != "..") {
+                require_once MODEL_PATH . $file;
+            }
+        }
+        closedir($handle);
+    }
 }
-// *****************************************************************************
 
 define("ACTION_SAVE", "save");
 define("ACTION_DELETE", "delete");

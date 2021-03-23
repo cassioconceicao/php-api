@@ -1,6 +1,7 @@
 <?php
+
 /*
- * Copyright (C) 2021 ctecinf.com.br
+ * Copyright (C) $year ctecinf.com.br
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,15 +18,15 @@
  */
 
 /**
- * Description of Cliente
+ * Description of $className
  *
- * @author cassio
+ * @author Cássio Conceição
+ * @copyright (c) $year, Cássio Conceição
+ * @see ctecinf.com.br
  */
-class Cliente extends Model {
+class $className extends Model {
 
-    //put your code here
     public function __toString() {
-        return $this->get("nome");
+        return $this->get("$className ID[" . $this->getId() . "]");
     }
-
 }
