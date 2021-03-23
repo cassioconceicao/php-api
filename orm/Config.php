@@ -40,3 +40,7 @@ define("PDO_OPTIONS", serialize(array(
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
 )));
+
+define("ACTION_SAVE", "save");
+define("ACTION_DELETE", "delete");
+define("ACTION_FIND", "find");

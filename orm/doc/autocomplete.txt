@@ -15,19 +15,29 @@
             ajax.responseType = 'json';
 
             ajax.onreadystatechange = function () {
+
                 if (this.readyState === 4 && this.status === 200) {
-                    var options = "";
-                    for (const op of ajax.response) {
-                        options += "<option value=" + op.value + ">" + op.label + "</option>";
+
+                    if(typeof ajax.response.error !== 'undefined') {
+                        sel.setAttribute('style', 'display:none');
+                        alert(ajax.response.error);
+                    } else if(ajax.response.length > 0) {
+                        var options = "";
+                        for (const op of ajax.response) {
+                            options += "<option value=" + op.value + ">" + op.label + "</option>";
+                        }
+                        sel.innerHTML = options;
+                        sel.setAttribute('style', 'display:block');
+                    } else {
+                        sel.setAttribute('style', 'display:none');
                     }
-                    sel.innerHTML = options;
-                    sel.setAttribute('style', 'display:block');
+
                 } else {
                     sel.setAttribute('style', 'display:none');
                 }
             };
 
-            ajax.send('term=' + term);
+            ajax.send('action=find&term=' + term + '&limit=' + 8);
         } else {
             sel.setAttribute('style', 'display:none');
         }

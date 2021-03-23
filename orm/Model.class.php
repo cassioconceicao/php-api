@@ -45,6 +45,13 @@ class Model {
     protected $data;
 
     /**
+     * Construtor
+     */
+    public function __construct() {
+        $this->getTableName();
+    }
+
+    /**
      * Abre conexão com banco de dados
      * 
      * @return PDO
@@ -380,7 +387,9 @@ class Model {
             self::getTableName();
         }
 
-        return self::find($id, 1, $_SESSION["metadata"][$class]["primary_key"]);
+        $rs = self::find($id, 1, $_SESSION["metadata"][$class]["primary_key"]);
+
+        return !$rs ? false : $rs[0];
     }
 
     /**
@@ -429,7 +438,7 @@ class Model {
         $class = get_called_class();
         $table = self::getTableName();
         $pkColumn = $_SESSION["metadata"][$class]["primary_key"];
-
+        
         //"SELECT {$table}.* FROM {$table} JOIN municipio ON CASE WHEN {$table}.municipio_id IS NULL THEN (SELECT MIN(municipio.id) FROM municipio) ELSE {$table}.municipio_id END = municipio.id"
         $query = "SELECT {$table}.* FROM {$table}";
 
@@ -460,15 +469,15 @@ class Model {
             $rs[$row[$pkColumn]] = self::makeObject($row);
         }
 
-        return count($rs) == 0 ? false : (count($rs) == 1 ? $rs[array_keys($rs)[0]] : $rs);
+        return count($rs) == 0 ? false : $rs;
     }
 
     /**
      * Cria ou altera registro no banco de dados
      * 
-     * @param array $params
+     * @param type $params
      */
-    public function save($params) {
+    public static function save($params = false) {
         
     }
 

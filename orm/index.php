@@ -20,16 +20,9 @@
 /**
  * *********** NÃO EDITAR ******************************************************
  */
-$ormDir = "orm";
-$path = ".." . DIRECTORY_SEPARATOR;
-
-foreach (array_reverse(explode(DIRECTORY_SEPARATOR, dirname($_SERVER["PHP_SELF"]))) as $dir) {
-    if (is_dir($path . $dir . DIRECTORY_SEPARATOR . $ormDir)) {
-        $path = $path . $dir . DIRECTORY_SEPARATOR . $ormDir . DIRECTORY_SEPARATOR;
-        break;
-    } else {
-        $path = ".." . DIRECTORY_SEPARATOR . $path;
-    }
+$path = "orm/";
+while (!file_exists($path)) {
+    $path = "../" . $path;
 }
 
 /**
@@ -48,11 +41,66 @@ require_once "{$path}Model.class.php";
 /**
  * Incluí classes modelos
  */
-$dir = dir(MODEL_PATH);
-while (($file = $dir->read()) !== false) {
-    if (is_file($path . '/' . $file) and preg_match('/^(.+)\.php$/i', $file)) {
-        require_once($path . '/' . $file);
+$handle = opendir(MODEL_PATH);
+if ($handle) {
+    while (false !== ($file = readdir($handle))) {
+        if ($file != "." && $file != "..") {
+            require_once MODEL_PATH . $file;
+        }
+    }
+    closedir($handle);
+}
+// *****************************************************************************
+
+/**
+ * Funções para controller
+ */
+function getAction() {
+    if (isset($_POST["action"])) {
+        return strtolower($_POST["action"]);
+    } else if (isset($_GET["action"])) {
+        return strtolower($_GET["action"]);
+    } else {
+        return false;
     }
 }
-$dir->close();
-// *****************************************************************************
+
+function getTerm() {
+    if (isset($_POST["term"])) {
+        return $_POST["term"];
+    } else if (isset($_GET["term"])) {
+        return $_GET["term"];
+    } else {
+        return "";
+    }
+}
+
+function getMaxResults() {
+    if (isset($_POST["limit"])) {
+        return $_POST["limit"];
+    } else if (isset($_GET["limit"])) {
+        return $_GET["limit"];
+    } else {
+        return -1;
+    }
+}
+
+function getId() {
+    if (isset($_POST["id"])) {
+        return $_POST["id"];
+    } else if (isset($_GET["id"])) {
+        return $_GET["id"];
+    } else {
+        return "";
+    }
+}
+
+function getData() {
+    if (isset($_POST["data"])) {
+        return $_POST["data"];
+    } else if (isset($_GET["data"])) {
+        return $_GET["data"];
+    } else {
+        return false;
+    }
+}
