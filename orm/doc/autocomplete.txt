@@ -48,7 +48,28 @@
         document.getElementById('$name').value = sel.value;
         document.getElementById('$name_label').value = sel.options[sel.selectedIndex].text;
     }
+
+    function verifyFocus$class(event) {
+
+        var code = event.keyCode ? event.keyCode : event.which;
+        var sel = document.getElementById('$name_list');
+
+        if(code == '40' && sel.options.length > 0) {
+            document.getElementById('$name_list').focus();
+            sel.value = sel.options[0].value;
+        }
+
+        if(code == '38' && sel.options.length > 0) {
+            document.getElementById('$name_label').focus();
+            sel.value = '';
+        }
+
+        if(code == '13' && sel.selectedIndex > -1) {
+            document.getElementById('$name_label').focus();
+            setSeleceted$class(sel);
+        }
+    }
 </script>
-<input id="$name_label" onkeyup="search$class(this.value)" />
-<input type="hidden" id="$name" name="$name" />
-<select id="$name_list" multiple style="display: none" ondblclick="setSeleceted$class(this)"></select>
+<input id="$name_label" onkeyup="search$class(this.value)" onkeydown="verifyFocus$class(event)" size="100%" />
+<input type="hidden" id="$name" name="data[$name]" />
+<select id="$name_list" style="display: none" size="4" ondblclick="setSeleceted$class(this)" onkeydown="verifyFocus$class(event)"></select>

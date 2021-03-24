@@ -438,7 +438,7 @@ class Model {
         $class = get_called_class();
         $table = self::getTableName();
         $pkColumn = $_SESSION["metadata"][$class]["primary_key"];
-        
+
         //"SELECT {$table}.* FROM {$table} JOIN municipio ON CASE WHEN {$table}.municipio_id IS NULL THEN (SELECT MIN(municipio.id) FROM municipio) ELSE {$table}.municipio_id END = municipio.id"
         $query = "SELECT {$table}.* FROM {$table}";
 
@@ -452,7 +452,11 @@ class Model {
 
             $cols = array();
             foreach ($columns as $column) {
-                $cols[] = "LOWER({$table}.{$column}) LIKE '" . strtolower($filter) . "%'";
+                if (DB_DSN == "pgsql") {
+                    $cols[] = "LOWER(CAST({$table}.{$column} AS VARCHAR)) LIKE '" . strtolower($filter) . "%'";
+                } else {
+                    $cols[] = "LOWER({$table}.{$column}) LIKE '" . strtolower($filter) . "%'";
+                }
             }
 
             $query .= implode(" OR ", $cols);

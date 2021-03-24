@@ -27,6 +27,6 @@
 class $className extends Model {
 
     public function __toString() {
-        return $this->get("$className ID[" . $this->getId() . "]");
+        return "$className ID[" . $this->getId() . "]";
     }
 }
