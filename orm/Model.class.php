@@ -389,7 +389,7 @@ class Model {
 
         $rs = self::find($id, 1, $_SESSION["metadata"][$class]["primary_key"]);
 
-        return !$rs ? false : $rs[0];
+        return !$rs ? false : $rs[array_keys($rs)[0]];
     }
 
     /**

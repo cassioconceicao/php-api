@@ -26,16 +26,22 @@ switch (getAction()) {
 
         try {
 
-            $list = array();
+            if (!getId()) {
 
-            foreach ($className::find(getTerm(), getMaxResults()) as $row) {
-                $list[] = array(
-                    "value" => $row->getId(),
-                    "label" => strval($row)
-                );
+                $list = array();
+
+                foreach ($className::find(getTerm(), getMaxResults()) as $row) {
+                    $list[] = array(
+                        "value" => $row->getId(),
+                        "label" => strval($row)
+                    );
+                }
+
+                $return = json_encode($list);
+            } else {
+                $obj = $className::findById(getId());
+                $return = json_encode(array("value" => $obj->getId(), "label" => strval($obj)));
             }
-
-            $return = json_encode($list);
         } catch (Exception $ex) {
             $return = json_encode(array("error" => $ex->getMessage()));
         }

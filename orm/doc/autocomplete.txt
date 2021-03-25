@@ -1,13 +1,19 @@
+<style type="text/css">
+    #$name-list a {color: #333;display: block;padding: 5px;text-decoration: none}
+    #$name-list a:nth-child(even) {background: #FFFFFF}
+    #$name-list a:nth-child(odd) {background: #DDFFDD}
+    #$name-list a:hover {background-color: #CCFFFF}
+</style>
 <script type="text/javascript">
 
-    function search$class(term) {
+    function search$className(term) {
 
-        var sel = document.getElementById('$name_list');
+        var sel = document.getElementById('$name-list');
 
         if (term.length > 0) {
 
             sel.innerHTML = "";
-            sel.setAttribute('style', 'display:none');
+            sel.setAttribute("style", "border: none");
 
             var ajax = typeof XMLHttpRequest !== 'undefined' ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
             ajax.open('POST', '$url');
@@ -18,58 +24,66 @@
 
                 if (this.readyState === 4 && this.status === 200) {
 
-                    if(typeof ajax.response.error !== 'undefined') {
-                        sel.setAttribute('style', 'display:none');
+                    if (typeof ajax.response.error !== 'undefined') {
+                        sel.innerHTML = "";
                         alert(ajax.response.error);
-                    } else if(ajax.response.length > 0) {
-                        var options = "";
+                    } else if (ajax.response.length > 0) {
+                        var list = "";
                         for (const op of ajax.response) {
-                            options += "<option value=" + op.value + ">" + op.label + "</option>";
+                            list += "<a href=\"javascript:setSeleceted$className('" + op.value + "', '" + op.label + "')\">" + op.label + "</a>";
                         }
-                        sel.innerHTML = options;
-                        sel.setAttribute('style', 'display:block');
+                        sel.innerHTML = list;
+                        sel.setAttribute("style", "border: 1px solid #CCC");
+
                     } else {
-                        sel.setAttribute('style', 'display:none');
+                        sel.innerHTML = "";
+                        sel.setAttribute("style", "border: none");
                     }
 
                 } else {
-                    sel.setAttribute('style', 'display:none');
+                    sel.innerHTML = "";
+                    sel.setAttribute("style", "border: none");
                 }
             };
 
             ajax.send('action=find&term=' + term + '&limit=' + 8);
         } else {
-            sel.setAttribute('style', 'display:none');
+            sel.innerHTML = "";
+            sel.setAttribute("style", "border: none");
         }
     }
 
-    function setSeleceted$class(sel) {
-        sel.setAttribute('style', 'display:none');
-        document.getElementById('$name').value = sel.value;
-        document.getElementById('$name_label').value = sel.options[sel.selectedIndex].text;
+    function setSeleceted$className(value, label) {
+        document.getElementById('$name').value = value;
+        document.getElementById('$name-label').value = label;
+        document.getElementById('$name-list').innerHTML = "";
+        document.getElementById('$name-list').setAttribute("style", "border: none");
     }
 
-    function verifyFocus$class(event) {
-
-        var code = event.keyCode ? event.keyCode : event.which;
-        var sel = document.getElementById('$name_list');
-
-        if(code == '40' && sel.options.length > 0) {
-            document.getElementById('$name_list').focus();
-            sel.value = sel.options[0].value;
-        }
-
-        if(code == '38' && sel.options.length > 0) {
-            document.getElementById('$name_label').focus();
-            sel.value = '';
-        }
-
-        if(code == '13' && sel.selectedIndex > -1) {
-            document.getElementById('$name_label').focus();
-            setSeleceted$class(sel);
-        }
-    }
 </script>
-<input id="$name_label" onkeyup="search$class(this.value)" onkeydown="verifyFocus$class(event)" size="100%" />
-<input type="hidden" id="$name" name="data[$name]" />
-<select id="$name_list" style="display: none" size="4" ondblclick="setSeleceted$class(this)" onkeydown="verifyFocus$class(event)"></select>
+<input id="$name-label" onkeyup="search$className(this.value)" size="100%" />
+<input type="hidden" id="$name" name="data[$name]" value="$value" />
+<div id="$name-list"></div>
+<script type="text/javascript">
+    
+    if(!isNaN(document.getElementById('$name').value) && document.getElementById('$name').value.length > 0) {
+
+        var ajax = typeof XMLHttpRequest !== 'undefined' ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+        ajax.open('POST', '$url');
+        ajax.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        ajax.responseType = 'json';
+
+        ajax.onreadystatechange = function () {
+            if (this.readyState === 4 && this.status === 200) {
+                if (typeof ajax.response.error !== 'undefined') {
+                    alert(ajax.response.error);
+                } else {
+                    document.getElementById('$name-label').value = ajax.response.label;
+                }
+            }
+        };
+
+        ajax.send('action=find&id=' + document.getElementById('$name').value);
+    }
+
+</script>
