@@ -36,7 +36,10 @@ define("CONTROLLER_PATH", "{$path}controller/");
  * Incluí configuração e superclasse das modelos
  */
 require_once "{$path}Config.php";
+require_once "{$path}DataType.class.php";
+require_once "{$path}Connection.class.php";
 require_once "{$path}Model.class.php";
+require_once "{$path}FormHelper.class.php";
 
 if (isset($_GET["create"])) {
 

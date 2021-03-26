@@ -1,8 +1,8 @@
 <style type="text/css">
     #$name-list a {color: #333;display: block;padding: 5px;text-decoration: none}
     #$name-list a:nth-child(even) {background: #FFFFFF}
-    #$name-list a:nth-child(odd) {background: #DDFFDD}
-    #$name-list a:hover {background-color: #CCFFFF}
+    #$name-list a:nth-child(odd) {background: $rowColor}
+    #$name-list a:hover {background-color: $rowFocusColor}
 </style>
 <script type="text/javascript">
 
@@ -61,7 +61,7 @@
     }
 
 </script>
-<input id="$name-label" onkeyup="search$className(this.value)" size="100%" />
+<input id="$name-label" onkeyup="search$className(this.value)" size="60" />
 <input type="hidden" id="$name" name="data[$name]" value="$value" />
 <div id="$name-list"></div>
 <script type="text/javascript">
