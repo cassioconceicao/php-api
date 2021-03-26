@@ -171,7 +171,7 @@ class Connection {
      */
     public function executeUpdate($sql, $params = array()) {
 
-        $conn = $this->openConnection();
+        $conn = self::openConnection();
 
         $st = $conn->prepare($sql);
 
@@ -202,7 +202,7 @@ class Connection {
      */
     public function executeQuery($query) {
 
-        $conn = $this->openConnection();
+        $conn = self::openConnection();
 
         $st = $conn->query($query);
 

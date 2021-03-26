@@ -31,6 +31,7 @@ while (!file_exists($path)) {
 define("ORM_PATH", $path);
 define("MODEL_PATH", "{$path}model/");
 define("CONTROLLER_PATH", "{$path}controller/");
+define("VIEW_PATH", "{$path}view/");
 
 /**
  * Incluí configuração e superclasse das modelos
@@ -40,6 +41,7 @@ require_once "{$path}DataType.class.php";
 require_once "{$path}Connection.class.php";
 require_once "{$path}Model.class.php";
 require_once "{$path}FormHelper.class.php";
+require_once "{$path}TableHelper.class.php";
 
 if (isset($_GET["create"])) {
 
@@ -91,7 +93,7 @@ if (isset($_GET["create"])) {
             fclose($handle);
         }
 
-        echo "Modelo(s) e Controle(s) gerado(s) com sucesso!";
+        echo "Modelo(s), Controle(s) e 'View(s)' gerado(s) com sucesso!";
     }
 } else {
 
