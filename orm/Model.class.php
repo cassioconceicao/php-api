@@ -180,7 +180,7 @@ class Model extends Connection {
     public static function find($filter = false, $limit = -1, $columns = false) {
 
         $class = get_called_class();
-        $table = self::getTableName();
+        $table = parent::getTableName();
         $pkColumn = $_SESSION["metadata"][$class]["primary_key"];
 
         //"SELECT {$table}.* FROM {$table} JOIN municipio ON CASE WHEN {$table}.municipio_id IS NULL THEN (SELECT MIN(municipio.id) FROM municipio) ELSE {$table}.municipio_id END = municipio.id"

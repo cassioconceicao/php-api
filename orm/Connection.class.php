@@ -54,7 +54,7 @@ class Connection {
             $class = get_called_class();
         }
 
-        if (!isset($_SESSION["metadata"][$class])) {
+        if (!$_SESSION["metadata"][$class]) {
 
             $reflection = new ReflectionClass($class);
 
@@ -69,7 +69,7 @@ class Connection {
             }
 
             $_SESSION["metadata"][$class]["table_name"] = $name;
-            $this->setColumns($class, $name);
+            self::setColumns($class, $name);
         }
 
         return $_SESSION["metadata"][$class]["table_name"];
@@ -82,9 +82,9 @@ class Connection {
      * @param string $table
      * @throws Exception
      */
-    private function setColumns($class, $table) {
+    protected function setColumns($class, $table) {
 
-        $conn = $this->openConnection();
+        $conn = self::openConnection();
 
         $query = "SELECT * FROM {$table} LIMIT 1";
         $st = $conn->query($query);
@@ -104,10 +104,10 @@ class Connection {
         }
 
         if (DB_DSN == "pgsql") {
-            $this->setPrimaryKeyPGSQL($class, $table, $conn);
+            self::setPrimaryKeyPGSQL($class, $table, $conn);
         }
 
-        $this->setForeignKeys($class, $table, $conn);
+        self::setForeignKeys($class, $table, $conn);
 
         $_SESSION["metadata"][$class]["columns"] = $columns;
     }
