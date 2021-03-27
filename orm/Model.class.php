@@ -224,11 +224,9 @@ class Model extends Connection {
 
         $table = parent::getTableName();
 
-        $query = "SELECT COUNT({$table}.id) AS total FROM {$table}";
+        $query = "SELECT COUNT(*) AS total FROM {$table}";
 
         $rs = self::executeQuery($query);
-        
-        var_dump($rs);
         
         return $rs[0]["total"];
     }
