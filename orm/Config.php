@@ -42,10 +42,16 @@ define("PDO_OPTIONS", serialize(array(
 )));
 
 /**
- * Definição de cores CSS
+ * Definição de estilos CSS
  */
+define("FONT_SIZE", "16px");
+define("BACKGROUND_COLOR", "#FFFFFF");
 define("ROW_COLOR", "#DDFFDD");
-define("ROW_FOCUS_COLOR", "#CCFFFF");
+define("HIGHLIGHT_COLOR", "#CCFFFF");
+define("TEXT_COLOR", "#333333");
+define("HEAD_COLOR", "#CCCCCC");
+define("HEAD_TEXT_COLOR", "#FFFFFF");
+define("BORDER_COLOR", "#DDDDDD");
 
 /**
  * Ícones Base 64

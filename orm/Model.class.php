@@ -220,6 +220,19 @@ class Model extends Connection {
         return count($rs) == 0 ? false : $rs;
     }
 
+    public static function count() {
+
+        $table = parent::getTableName();
+
+        $query = "SELECT COUNT({$table}.id) AS total FROM {$table}";
+
+        $rs = self::executeQuery($query);
+        
+        var_dump($rs);
+        
+        return $rs[0]["total"];
+    }
+
     /**
      * Cria ou altera registro no banco de dados
      * 

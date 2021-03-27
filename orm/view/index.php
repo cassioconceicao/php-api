@@ -17,30 +17,27 @@
  */
 
 require_once '../index.php';
-echo "<meta name=\"viewport\" content=\"width=device-width, initial-scale=0.70, maximum-scale=1.0, minimum-scale=0.70\">";
-$rs = Municipio::sortResultSet(Municipio::find());
 
-$total = count($rs);
-$limit = 1000;
-$pages = ceil($total / $limit);
+echo getHTMLHead();
 ?>
 
 <style type="text/css">
 
-    #searchMunicipio {background-image: url(data:image/png;base64,<?php echo SEARCH_ICON ?>);background-position: 5px 5px;background-repeat: no-repeat;width: 100%;font-size: 16px;padding: 12px 20px 12px 40px;border: 1px solid #DDDDDD;margin-bottom: 12px}
+    #searchMunicipio {color: <?php echo TEXT_COLOR ?>;border-radius: 5px;border: 1px solid <?php echo BORDER_COLOR ?>;background-image: url(data:image/png;base64,<?php echo SEARCH_ICON ?>);background-position: 5px 5px;background-repeat: no-repeat;width: 85%;font-size: <?php echo FONT_SIZE ?>;padding: 12px 20px 12px 40px;border: 1px solid <?php echo BORDER_COLOR ?>;margin-bottom: 12px}
 
-    #tableMunicipio {border-collapse: collapse;width: 100%;border: 1px solid #DDDDDD;font-size: 18px;margin-bottom: 12px}
+    #tableMunicipio {color: <?php echo TEXT_COLOR ?>;border-collapse: collapse;width: 100%;border: 1px solid <?php echo BORDER_COLOR ?>;font-size: <?php echo FONT_SIZE ?>;margin-bottom: 12px}
     #tableMunicipio thead th, #tableMunicipio tbody td {text-align: left;padding: 12px}
-    #tableMunicipio tbody tr:nth-child(even) {background: #FFFFFF}
+    #tableMunicipio tbody tr:nth-child(even) {background: <?php echo BACKGROUND_COLOR ?>}
     #tableMunicipio tbody tr:nth-child(odd) {background: <?php echo ROW_COLOR ?>}
-    #tableMunicipio tr {border-bottom: 1px solid #DDDDDD}
-    #tableMunicipio thead tr, #tableMunicipio tbody tr:hover {cursor: pointer;background-color: <?php echo ROW_FOCUS_COLOR ?>}
+    #tableMunicipio tr {border-bottom: 1px solid <?php echo BORDER_COLOR ?>}
+    #tableMunicipio thead tr{color: <?php echo HEAD_TEXT_COLOR ?>;background-color: <?php echo HEAD_COLOR ?>}
+    #tableMunicipio tbody tr:hover {cursor: pointer;background-color: <?php echo HIGHLIGHT_COLOR ?>}
 
-    .paginationMunicipio {display: inline-block;margin-bottom: 12px}
-    .paginationMunicipio a {color: black;float: left;padding: 8px 16px;text-decoration: none;margin: 0 4px;border: 1px solid #DDDDDD}
+    .paginationMunicipio {display: inline-block;font-size: <?php echo FONT_SIZE ?>;margin-bottom: 12px}
+    .paginationMunicipio a {color: <?php echo TEXT_COLOR ?>;float: left;padding: 8px 16px;text-decoration: none;margin: 0 4px;border: 1px solid <?php echo BORDER_COLOR ?>}
     .paginationMunicipio a {border-radius: 5px}
-    .paginationMunicipio a.active {border-radius: 5px;background-color: <?php echo ROW_FOCUS_COLOR ?>}
-    .paginationMunicipio a:hover:not(.active) {background-color: <?php echo ROW_FOCUS_COLOR ?>}
+    .paginationMunicipio a.active {border-radius: 5px;background-color: <?php echo HIGHLIGHT_COLOR ?>}
+    .paginationMunicipio a:hover:not(.active) {background-color: <?php echo HIGHLIGHT_COLOR ?>}
     .paginationMunicipio a:first-child {border-top-left-radius: 5px;border-bottom-left-radius: 5px}
     .paginationMunicipio a:last-child {border-top-right-radius: 5px;border-bottom-right-radius: 5px}
 
@@ -48,36 +45,62 @@ $pages = ceil($total / $limit);
 
 <script type="text/javascript">
 
-    var offset, data;
+    var offset, data, limit, total;
 
     function initPaginationMunicipio() {
 
         offset = 0;
+        limit = <?php echo $limit ?>;
+
+        var ajax = typeof XMLHttpRequest !== 'undefined' ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+        ajax.open('POST', '../controller/Municipio.php');
+        ajax.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        ajax.responseType = 'json';
+
+        ajax.onreadystatechange = function () {
+alert(this.readyState);
+            if (this.readyState === 4 && this.status === 200) {
+
+                alert('aqui');
+//                if (typeof ajax.response.error !== 'undefined') {
+//                    alert(ajax.response.error);
+//                } else if (ajax.response.length > 0) {
+//                    total = ajax.response.total;
+//                } 
+            }
+        };
+
+        ajax.send('action=count');
+
         var pages = <?php echo $pages ?>;
-        var div = document.getElementsByClassName("paginationMunicipio");
 
-        for (var i = 0; i < div.length; i++) {
+        if (pages > 1) {
 
-            link = document.createElement("a");
-            link.href = "javascript:setPageMunicipio(1)";
-            link.innerHTML = "&laquo";
-            div[i].appendChild(link);
+            var div = document.getElementsByClassName("paginationMunicipio");
 
-            for (var j = 1; j < pages + 1; j++) {
+            for (var i = 0; i < div.length; i++) {
 
                 link = document.createElement("a");
-                link.href = "javascript:setPageMunicipio(" + j + ")";
-                link.innerHTML = j;
-                if (j === 1) {
-                    link.className = "active";
+                link.href = "javascript:setPageMunicipio(1)";
+                link.innerHTML = "&laquo";
+                div[i].appendChild(link);
+
+                for (var j = 1; j < pages + 1; j++) {
+
+                    link = document.createElement("a");
+                    link.href = "javascript:setPageMunicipio(" + j + ")";
+                    link.innerHTML = j;
+                    if (j === 1) {
+                        link.className = "active";
+                    }
+                    div[i].appendChild(link);
                 }
+
+                link = document.createElement("a");
+                link.href = "javascript:setPageMunicipio(" + pages + ")";
+                link.innerHTML = "&raquo;";
                 div[i].appendChild(link);
             }
-
-            link = document.createElement("a");
-            link.href = "javascript:setPageMunicipio(" + pages + ")";
-            link.innerHTML = "&raquo;";
-            div[i].appendChild(link);
         }
 
         setPageMunicipio(1);
@@ -135,21 +158,22 @@ $pages = ceil($total / $limit);
             <th style="width:30px">Código</th><th>Descrição</th>
         </tr>
     </thead>
+    <tbody></tbody>
     <?php
-    $index = 0;
-    echo "<tbody>\n";
-    foreach ($rs as $row) {
-        if ($index == $limit) {
-            echo "</tbody>\n";
-            echo "<tbody>\n";
-            $index = 0;
-        }
-        echo "<tr>\n";
-        echo "<td>" . $row->getId() . "</td><td>" . strval($row) . "</td>\n";
-        echo "</tr>\n";
-        $index++;
-    }
-    echo "</tbody>\n";
+//    $index = 0;
+//    echo "<tbody>\n";
+//    foreach ($rs as $row) {
+//        if ($index == $limit) {
+//            echo "</tbody>\n";
+//            echo "<tbody>\n";
+//            $index = 0;
+//        }
+//        echo "<tr>\n";
+//        echo "<td>" . $row->getId() . "</td><td>" . strval($row) . "</td>\n";
+//        echo "</tr>\n";
+//        $index++;
+//    }
+//    echo "</tbody>\n";
     ?>
 </table>
 <div class="paginationMunicipio"></div>

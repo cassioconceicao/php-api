@@ -27,4 +27,9 @@
  */
 class TableHelper {
     
+    public static function create($className) {
+        
+        $reflection = new ReflectionClass($className);
+        
+    }
 }

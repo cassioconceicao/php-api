@@ -1,8 +1,9 @@
 <style type="text/css">
-    #$name-list a {color: #333;display: block;padding: 5px;text-decoration: none}
-    #$name-list a:nth-child(even) {background: #FFFFFF}
+    #$name-label {color: $textColor;width: 95%;border-radius: 5px;border: 1px solid $borderColor;font-size: 16px;padding: 5px;font-size: $fontSize;margin-bottom: 12px}
+    #$name-list a {color: $textColor;display: block;padding: 5px;text-decoration: none;font-size: $fontSize}
+    #$name-list a:nth-child(even) {background: $backgroundColor}
     #$name-list a:nth-child(odd) {background: $rowColor}
-    #$name-list a:hover {background-color: $rowFocusColor}
+    #$name-list a:hover {background-color: $highlightColor}
 </style>
 <script type="text/javascript">
 
@@ -33,7 +34,7 @@
                             list += "<a href=\"javascript:setSeleceted$className('" + op.value + "', '" + op.label + "')\">" + op.label + "</a>";
                         }
                         sel.innerHTML = list;
-                        sel.style.border = "1px solid #DDDDDD";
+                        sel.style.border = "1px solid $borderColor";
 
                     } else {
                         sel.innerHTML = "";
