@@ -17,7 +17,7 @@
  */
 
 require_once '../index.php';
-
+$limit = 1000;
 echo getHTMLHead();
 ?>
 
@@ -45,7 +45,7 @@ echo getHTMLHead();
 
 <script type="text/javascript">
 
-    var offset, data, limit, total;
+    var offset, limit, total;
 
     function initPaginationMunicipio() {
 
@@ -58,21 +58,19 @@ echo getHTMLHead();
         ajax.responseType = 'json';
 
         ajax.onreadystatechange = function () {
-alert(this.readyState);
-            if (this.readyState === 4 && this.status === 200) {
 
-                alert('aqui');
-//                if (typeof ajax.response.error !== 'undefined') {
-//                    alert(ajax.response.error);
-//                } else if (ajax.response.length > 0) {
-//                    total = ajax.response.total;
-//                } 
+            if (this.readyState === 4 && this.status === 200) {
+                if (typeof ajax.response.error !== 'undefined') {
+                    alert(ajax.response.error);
+                } else if (ajax.response.length > 0) {
+                    total = ajax.response.total;
+                } 
             }
         };
 
         ajax.send('action=count');
-
-        var pages = <?php echo $pages ?>;
+alert(total);
+        var pages = Math.ceil(total / limit);
 
         if (pages > 1) {
 
