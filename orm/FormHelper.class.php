@@ -26,5 +26,42 @@
  * @see http://ctecinf.com.br/
  */
 class FormHelper {
-    //put your code here
+
+    private $className;
+    private $url;
+    private $html;
+
+    /**
+     * Cria assintente de tabela HTML
+     * 
+     * @param string $className
+     * @return FormHelper
+     */
+    public static function create($className) {
+
+        $reflection = new ReflectionClass($className);
+        $url = CONTROLLER_PATH . $reflection->getName() . ".php";
+
+        $html = "";
+
+        $form = new FormHelper();
+        $form->html = $html;
+        $form->url = $url;
+        $form->className = $reflection->getName();
+
+        return $form;
+    }
+
+    function getModelClassName() {
+        return $this->className;
+    }
+
+    function getControllerPath() {
+        return $this->url;
+    }
+
+    public function __toString() {
+        return $this->html;
+    }
+
 }

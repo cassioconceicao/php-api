@@ -136,7 +136,6 @@ class Connection {
 
     private function setForeignKeys($class, $table, $conn) {
 
-        // Colunas "col_name", "ref_tab_name" e "ref_col_name"
         if (DB_DSN == "mysql") {
             $query = "SELECT information_schema.KEY_COLUMN_USAGE.COLUMN_NAME AS col_name, information_schema.KEY_COLUMN_USAGE.REFERENCED_TABLE_NAME AS ref_tab_name,information_schema.KEY_COLUMN_USAGE.REFERENCED_COLUMN_NAME AS ref_col_name FROM information_schema.KEY_COLUMN_USAGE WHERE information_schema.KEY_COLUMN_USAGE.TABLE_NAME = '{$table}' AND information_schema.KEY_COLUMN_USAGE.REFERENCED_TABLE_NAME IS NOT NULL ";
         } else if (DB_DSN == "pgsql") {

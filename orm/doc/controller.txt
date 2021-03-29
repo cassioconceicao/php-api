@@ -30,17 +30,23 @@ switch (getAction()) {
 
                 $list = array();
 
-                foreach ($className::find(getTerm(), getMaxResults()) as $row) {
+                foreach ($className::find(getTerm(), getOffSet(), getMaxResults()) as $row) {
                     $list[] = array(
                         "value" => $row->getId(),
-                        "label" => strval($row)
+                        "label" => strval($row),
+                        "data" => $row->getData()
                     );
                 }
 
                 $return = json_encode($list);
             } else {
+
                 $obj = $className::findById(getId());
-                $return = json_encode(array("value" => $obj->getId(), "label" => strval($obj)));
+                if (!$obj) {
+                    $return = json_encode(array("error" => "Registro não encontrado."));
+                } else {
+                    $return = json_encode(array("value" => $obj->getId(), "label" => strval($obj), "data" => $obj->getData()));
+                }
             }
         } catch (Exception $ex) {
             $return = json_encode(array("error" => $ex->getMessage()));
@@ -51,7 +57,9 @@ switch (getAction()) {
     case ACTION_SAVE:
 
         try {
-            $return = $className::save(getData()) ? json_encode(array("success" => "Registro salvo com sucesso.")) : json_encode(array("error" => "Algo deu errado, tente novamente."));
+            $obj = new $className();
+            $obj->setData(getData());
+            $return = $obj->save() ? json_encode(array("success" => "Registro salvo com sucesso.")) : json_encode(array("error" => "Algo deu errado, tente novamente."));
         } catch (Exception $ex) {
             $return = json_encode(array("error" => $ex->getMessage()));
         }
@@ -69,6 +77,16 @@ switch (getAction()) {
             } else {
                 $return = $obj->delete() ? json_encode(array("success" => "Registro apagado com sucesso.")) : json_encode(array("error" => "Algo deu errado, tente novamente."));
             }
+        } catch (Exception $ex) {
+            $return = json_encode(array("error" => $ex->getMessage()));
+        }
+
+        break;
+
+    case ACTION_COUNT:
+
+        try {
+            $return = json_encode(array("total" => $className::count()));
         } catch (Exception $ex) {
             $return = json_encode(array("error" => $ex->getMessage()));
         }

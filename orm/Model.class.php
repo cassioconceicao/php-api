@@ -34,6 +34,12 @@ class Model extends Connection {
     protected $data;
 
     /**
+     * <i>Labels</i> de cada coluna para exibição no formulário
+     * @var array
+     */
+    protected $displayLabel = array();
+
+    /**
      * Construtor
      */
     public function __construct() {
@@ -46,7 +52,7 @@ class Model extends Connection {
      * @param array $value
      * @return Model
      */
-    private function makeObject($value, $class = false) {
+    private function createObject($value, $class = false) {
 
         if (!$class) {
             $class = new ReflectionClass(get_called_class());
@@ -85,7 +91,7 @@ class Model extends Connection {
      * @return mixed
      * @throws Exception
      */
-    public function get($column, $getReferencedObject = true) {
+    public function getValue($column, $getReferencedObject = true) {
 
         $class = get_called_class();
 
@@ -113,8 +119,24 @@ class Model extends Connection {
      * @param string $column Nome da coluna
      * @param mixed $value Valor
      */
-    public function set($column, $value) {
+    public function setValue($column, $value) {
         $this->data[$column] = $value;
+    }
+
+    /**
+     * Dados das colunas
+     * 
+     * @param array $params
+     */
+    public function setData($params) {
+        $this->data = $params;
+    }
+
+    /**
+     * Dados das colunas
+     */
+    public function getData() {
+        return $this->data;
     }
 
     /**
@@ -122,6 +144,7 @@ class Model extends Connection {
      * 
      * @param int $id
      * @return Model
+     * @throws Exception
      */
     public static function findById($id) {
 
@@ -131,7 +154,7 @@ class Model extends Connection {
             self::getTableName();
         }
 
-        $rs = self::find($id, 1, $_SESSION["metadata"][$class]["primary_key"]);
+        $rs = self::find($id, 0, 1, $_SESSION["metadata"][$class]["primary_key"]);
 
         return !$rs ? false : $rs[array_keys($rs)[0]];
     }
@@ -143,6 +166,7 @@ class Model extends Connection {
      * @param boolean $asc Ordenação ascendente ou descendente
      * @param string $column Nome da coluna para ordenar, na ausência desse parâmetro utiliza método <i>__toString</i>
      * @return array ResultSet
+     * @throws Exception
      */
     public static function sortResultSet($rs, $asc = true, $column = false) {
 
@@ -151,7 +175,7 @@ class Model extends Connection {
             $class = new ReflectionClass($obj1);
             $param = null;
             if ($column) {
-                $method = $class->getMethod('get');
+                $method = $class->getMethod('getValue');
                 $param = $column;
             } else {
                 $method = $class->getMethod('__toString');
@@ -173,11 +197,13 @@ class Model extends Connection {
      * Consulta
      * 
      * @param string $filter
+     * @param int $offset default 0
      * @param int $limit default -1
      * @param array $columns
      * @return array
+     * @throws Exception
      */
-    public static function find($filter = false, $limit = -1, $columns = false) {
+    public static function find($filter = false, $offset = 0, $limit = -1, $columns = false) {
 
         $class = get_called_class();
         $table = parent::getTableName();
@@ -208,35 +234,37 @@ class Model extends Connection {
             $query .= " WHERE {$table}.{$columns} = '{$filter}'";
         }
 
-        if ($limit > 0) {
-            $query .= " LIMIT {$limit}";
+        if ($limit > 0 && DB_DSN == "pgsql") {
+            $query .= " LIMIT {$limit} OFFSET {$offset}";
+        } else if ($limit > 0) {
+            $query .= " LIMIT {$offset}, {$limit}";
         }
 
         $rs = array();
         foreach (self::executeQuery($query) as $row) {
-            $rs[$row[$pkColumn]] = self::makeObject($row);
+            $rs[$row[$pkColumn]] = self::createObject($row);
         }
 
         return count($rs) == 0 ? false : $rs;
     }
 
+    /**
+     * Total de registros
+     * 
+     * @return int 
+     * @throws Exception
+     */
     public static function count() {
-
         $table = parent::getTableName();
-
         $query = "SELECT COUNT(*) AS total FROM {$table}";
-
         $rs = self::executeQuery($query);
-        
         return $rs[0]["total"];
     }
 
     /**
      * Cria ou altera registro no banco de dados
-     * 
-     * @param type $params
      */
-    public static function save($params = false) {
+    public function save() {
         
     }
 
