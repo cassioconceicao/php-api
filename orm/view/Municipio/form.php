@@ -17,9 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once '../../index.php';
+require_once '../index.php';
 
-echo getHTMLHead("", false);
 echo getId();
 
 echo FormHelper::create(Municipio::class);
