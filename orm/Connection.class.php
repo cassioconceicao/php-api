@@ -35,7 +35,7 @@ class Connection {
      */
     protected function openConnection() {
         try {
-            return new PDO(DB_DSN . ":host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PASS, unserialize(PDO_OPTIONS));
+            return new PDO(DB_DSN . ":host=" . DB_HOST . ";dbname=" . DB_NAME . (DB_DSN == "mysql" ? ";charset=utf8" : ""), DB_USER, DB_PASS, unserialize(PDO_OPTIONS));
         } catch (Exception $exc) {
             throw $exc;
         }

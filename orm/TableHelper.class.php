@@ -28,8 +28,21 @@
 class TableHelper {
 
     private $className;
-    private $url;
+    private $controllerPath;
     private $html;
+
+    /**
+     * 
+     * @param string $className Nome da classe modelo
+     */
+    function __construct($className) {
+
+        $reflection = new ReflectionClass($className);
+
+        $this->className = $reflection->getName();
+        $this->controllerPath = CONTROLLER_PATH . $this->className . ".php";
+        $this->html = getDocFile("table-helper.txt", $this->className, $this->controllerPath);
+    }
 
     /**
      * Cria assintente de tabela HTML
@@ -38,30 +51,7 @@ class TableHelper {
      * @return TableHelper
      */
     public static function create($className) {
-
-        $reflection = new ReflectionClass($className);
-        $url = CONTROLLER_PATH . $reflection->getName() . ".php";
-
-        $html = file_get_contents(ORM_PATH . "doc/table.txt");
-        $html = str_replace("\$className", $reflection->getName(), $html);
-        $html = str_replace("\$url", $url, $html);
-        $html = str_replace("\$paginationMaxResults", PAGINATION_MAX_RESULTS, $html);
-        $html = str_replace("\$backgroundColor", BACKGROUND_COLOR, $html);
-        $html = str_replace("\$rowColor", ROW_COLOR, $html);
-        $html = str_replace("\$fontSize", FONT_SIZE, $html);
-        $html = str_replace("\$textColor", TEXT_COLOR, $html);
-        $html = str_replace("\$headColor", HEAD_COLOR, $html);
-        $html = str_replace("\$highlightColor", HIGHLIGHT_COLOR, $html);
-        $html = str_replace("\$borderColor", BORDER_COLOR, $html);
-        $html = str_replace("\$searchIcon", SEARCH_ICON, $html);
-        $html = str_replace("\$headTextColor", HEAD_TEXT_COLOR, $html);
-
-        $table = new TableHelper();
-        $table->html = $html;
-        $table->url = $url;
-        $table->className = $reflection->getName();
-
-        return $table;
+        return new TableHelper($className);
     }
 
     function getModelClassName() {
@@ -69,9 +59,9 @@ class TableHelper {
     }
 
     function getControllerPath() {
-        return $this->url;
+        return $this->controllerPath;
     }
-    
+
     public function __toString() {
         return $this->html;
     }

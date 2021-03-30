@@ -100,7 +100,7 @@ if (isset($_GET["create"])) {
             if (mkdir($fileName, 0777)) {
 
                 chmod($fileName, 0777);
-                
+
                 if (!file_exists($fileName . "index.php")) {
                     $handle = fopen($fileName . "index.php", "w");
                     fwrite($handle, str_replace("\$year", date("Y"), str_replace("\$className", "{$name}", file_get_contents(ORM_PATH . "doc/viewlist.txt"))));
@@ -231,14 +231,38 @@ function getMenu() {
         $menuList .= "<a href=\"" . VIEW_PATH . "{$url}\">{$label}</a>\n";
     }
 
-    $html = file_get_contents(ORM_PATH . "doc/menu.txt");
+    $html = getDocFile("menu.txt");
     $html = str_replace("\$menuList", $menuList, $html);
-    $html = str_replace("\$title", TITLE, $html);
-    $html = str_replace("\$borderColor", BORDER_COLOR, $html);
-    $html = str_replace("\$textColor", TEXT_COLOR, $html);
-    $html = str_replace("\$fontSize", FONT_SIZE, $html);
-    $html = str_replace("\$backgroundColor", BACKGROUND_COLOR, $html);
-    $html = str_replace("\$highlightColor", HIGHLIGHT_COLOR, $html);
 
     return $html;
+}
+
+function getDocFile($file, $className = false, $url = false) {
+
+    $str = file_get_contents(ORM_PATH . "doc/{$file}");
+
+    if ($className) {
+        $str = str_replace("\$className", $className, $str);
+    }
+
+    if ($url) {
+        $str = str_replace("\$url", $url, $str);
+    }
+
+    $str = str_replace("\$title", TITLE, $str);
+    $str = str_replace("\$fontSize", FONT_SIZE, $str);
+    $str = str_replace("\$backgroundColor", BACKGROUND_COLOR, $str);
+    $str = str_replace("\$rowColor", ROW_COLOR, $str);
+    $str = str_replace("\$highlightColor", HIGHLIGHT_COLOR, $str);
+    $str = str_replace("\$textColor", TEXT_COLOR, $str);
+    $str = str_replace("\$headColor", HEAD_COLOR, $str);
+    $str = str_replace("\$headTextColor", HEAD_TEXT_COLOR, $str);
+    $str = str_replace("\$borderColor", BORDER_COLOR, $str);
+    $str = str_replace("\$saveIcon", SAVE_ICON, $str);
+    $str = str_replace("\$deleteIcon", DELETE_ICON, $str);
+    $str = str_replace("\$searchIcon", SEARCH_ICON, $str);
+    $str = str_replace("\$homeIcon", HOME_ICON, $str);
+    $str = str_replace("\$paginationMaxResults", PAGINATION_MAX_RESULTS, $str);
+
+    return $str;
 }

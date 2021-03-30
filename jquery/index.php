@@ -20,23 +20,16 @@
 /**
  * *********** NÃO EDITAR ******************************************************
  */
-$jqueryDir = "jquery";
-$path = ".." . DIRECTORY_SEPARATOR;
-
-foreach (array_reverse(explode(DIRECTORY_SEPARATOR, dirname($_SERVER["PHP_SELF"]))) as $dir) {
-    if (is_dir($path . $dir . DIRECTORY_SEPARATOR . $jqueryDir)) {
-        $path = $path . $dir . DIRECTORY_SEPARATOR . $jqueryDir . DIRECTORY_SEPARATOR;
-        break;
-    } else {
-        $path = ".." . DIRECTORY_SEPARATOR . $path;
-    }
+$path = "jquery/";
+while (!file_exists($path)) {
+    $path = "../" . $path;
 }
 
 require_once "{$path}Config.php";
 
-$html = "<link type=\"text/css\" rel=\"stylesheet\" href=\"{$path}ui/1.12.1/themes/" . THEME . "/jquery-ui.min.css\"/>";
-$html .= "<script type=\"text/javascript\" src=\"{$path}jquery-1.12.4.min.js\"></script>";
-$html .= "<script type=\"text/javascript\" src=\"{$path}ui/1.12.1/jquery-ui.min.js\"></script>";
+$html = "<link type=\"text/css\" rel=\"stylesheet\" href=\"{$path}ui/1.12.1/themes/" . THEME . "/jquery-ui.min.css\"/>\n";
+$html .= "<script type=\"text/javascript\" src=\"{$path}jquery-1.12.4.min.js\"></script>\n";
+$html .= "<script type=\"text/javascript\" src=\"{$path}ui/1.12.1/jquery-ui.min.js\"></script>\n";
 
 echo $html;
 //******************************************************************************
