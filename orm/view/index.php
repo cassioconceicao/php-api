@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (C) 2021 ctecinf.com.br
  *
@@ -16,9 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 $path = "orm/";
-while (!file_exists($path)) {
+do {
     $path = "../" . $path;
-}
+} while (!file_exists($path));
+
 require_once "{$path}index.php";
 
 echo getHTMLHead();

@@ -1,0 +1,66 @@
+<style type="text/css">
+    #form$className fieldset {border-radius: 5px;border: 1px solid $borderColor;margin-bottom: 12px}
+</style>
+<script type="text/javascript">
+
+    function initForm$className() {
+        
+        if (document.getElementById("$idName").value > 0) {
+
+            var ajax = typeof XMLHttpRequest !== 'undefined' ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+            ajax.open('POST', document.form$className.action);
+            ajax.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            ajax.responseType = 'json';
+
+            ajax.onreadystatechange = function () {
+
+                if (this.readyState === 4 && this.status === 200) {
+
+                    if (typeof ajax.response.error !== 'undefined') {
+                        alert(ajax.response.error);
+                    } else {
+                        for (var i = 0; i < document.form$className.elements.length; i++) {
+                            if (document.form$className.elements[i].name.indexOf('data') !== -1) {
+                                document.form$className.elements[i].value = ajax.response.data[document.form$className.elements[i].id];
+                            }
+                        }
+                        document.getElementById("spinner").style.display = "none";
+                    }
+                }
+            };
+
+            ajax.send('action=find&id=' + document.getElementById("<?php echo $idColumn ?>").value);
+
+        } else {
+            document.getElementById("spinner").style.display = "none";
+        }
+    }
+
+    function save$className() {
+
+    }
+
+    function delete$className(id) {
+        if (confirm("Deseja realmente excluír registro $className [ID: " + id + "]?")) {
+
+        }
+    }
+</script>
+<form id="form$className" name="form$className" action="$url" method="POST">
+    <input type="hidden" id="$idName" name="data[$idName]" value="$idValue" />
+    <fieldset>
+        <legend>$className</legend>
+        $elements
+    </fieldset>
+</form>
+<button>
+    <input type="image" height="16" src="data:image/png;base64, $saveIcon" />
+    Salvar
+</button>
+<button onclick="delete$className(this.value)" value="$idValue">
+    <img type="image" height="16" src="data:image/png;base64, $deleteIcon" />
+    Apagar
+</button>
+<script type="text/javascript">
+    initForm$className();
+</script>

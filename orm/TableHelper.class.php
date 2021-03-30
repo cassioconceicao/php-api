@@ -54,11 +54,11 @@ class TableHelper {
         return new TableHelper($className);
     }
 
-    function getModelClassName() {
+    public function getModelClassName() {
         return $this->className;
     }
 
-    function getControllerPath() {
+    public function getControllerPath() {
         return $this->controllerPath;
     }
 

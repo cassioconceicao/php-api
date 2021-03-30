@@ -1,5 +1,6 @@
 <style type="text/css">
-    #$name-label {color: $textColor;width: 95%;border-radius: 5px;border: 1px solid $borderColor;font-size: 16px;padding: 5px;font-size: $fontSize;margin-bottom: 12px}
+    #$name-label {color: $textColor;border-radius: 5px;border: 1px solid $borderColor;background-image: url(data:image/png;base64,$searchIcon);background-position: 5px 5px;background-repeat: no-repeat;width: 85%;font-size: $fontSize;padding: 12px 20px 12px 40px;border: 1px solid $borderColor}
+    #$name-list {margin-bottom: 12px}
     #$name-list a {color: $textColor;display: block;padding: 5px;text-decoration: none;font-size: $fontSize}
     #$name-list a:nth-child(even) {background: $backgroundColor}
     #$name-list a:nth-child(odd) {background: $rowColor}
@@ -62,29 +63,40 @@
     }
 
 </script>
-<input id="$name-label" onkeyup="search$className(this.value)" size="60" />
+<label for="$name-label" style="color: $textColor;font-size: $fontSize">$label</label><br />
+<input id="$name-label" placeholder="Digite para pesquisar $label" onkeyup="search$className(this.value)" size="60" />
 <input type="hidden" id="$name" name="data[$name]" value="$value" />
 <div id="$name-list"></div>
 <script type="text/javascript">
-    
-    if(!isNaN(document.getElementById('$name').value) && document.getElementById('$name').value.length > 0) {
 
-        var ajax = typeof XMLHttpRequest !== 'undefined' ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-        ajax.open('POST', '$url');
-        ajax.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        ajax.responseType = 'json';
+    var descriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value");
+    var originalSet = descriptor.set;
 
-        ajax.onreadystatechange = function () {
-            if (this.readyState === 4 && this.status === 200) {
-                if (typeof ajax.response.error !== 'undefined') {
-                    alert(ajax.response.error);
-                } else {
-                    document.getElementById('$name-label').value = ajax.response.label;
+    descriptor.set = function (val) {
+
+        if (this.id === "$name" && val > 0) {
+
+            var ajax = typeof XMLHttpRequest !== 'undefined' ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+            ajax.open('POST', '$url');
+            ajax.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            ajax.responseType = 'json';
+
+            ajax.onreadystatechange = function () {
+                if (this.readyState === 4 && this.status === 200) {
+                    if (typeof ajax.response.error !== 'undefined') {
+                        alert(ajax.response.error);
+                    } else {
+                        document.getElementById('$name-label').value = ajax.response.label;
+                    }
                 }
-            }
-        };
+            };
 
-        ajax.send('action=find&id=' + document.getElementById('$name').value);
-    }
+            ajax.send('action=find&id=' + val);
+        }
+
+        originalSet.apply(this, arguments);
+    };
+
+    Object.defineProperty(HTMLInputElement.prototype, "value", descriptor);
 
 </script>

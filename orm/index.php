@@ -21,9 +21,9 @@
  * *********** NÃO EDITAR ******************************************************
  */
 $path = "orm/";
-while (!file_exists($path)) {
+do {
     $path = "../" . $path;
-}
+} while (!file_exists($path));
 
 /**
  * Define PATH

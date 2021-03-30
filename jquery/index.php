@@ -21,9 +21,9 @@
  * *********** NÃO EDITAR ******************************************************
  */
 $path = "jquery/";
-while (!file_exists($path)) {
+do {
     $path = "../" . $path;
-}
+} while (!file_exists($path));
 
 require_once "{$path}Config.php";
 

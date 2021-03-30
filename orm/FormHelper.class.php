@@ -28,8 +28,10 @@
 class FormHelper {
 
     private $className;
+    private $instance;
     private $controllerPath;
     private $html;
+    private $elements = array();
 
     /**
      * 
@@ -40,6 +42,7 @@ class FormHelper {
         $reflection = new ReflectionClass($className);
 
         $this->className = $reflection->getName();
+        $this->instance = $reflection->newInstanceWithoutConstructor();
         $this->controllerPath = CONTROLLER_PATH . $this->className . ".php";
         $this->html = getDocFile("form-helper.txt", $this->className, $this->controllerPath);
     }
@@ -48,13 +51,18 @@ class FormHelper {
      * Cria assintente de tabela HTML
      * 
      * @param string $className
-     * @return TableHelper
+     * @return FormHelper
      */
     public static function create($className) {
-        return new FormHelper($className);
+        
+        $form = new FormHelper($className);
+        
+        
+        
+        return $form;
     }
 
-    function getModelClassName() {
+    public function getModelClassName() {
         return $this->className;
     }
 
