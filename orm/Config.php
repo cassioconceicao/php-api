@@ -42,6 +42,11 @@ define("PDO_OPTIONS", serialize(array(
 )));
 
 /**
+ * Definição do título da aplicação
+ */
+define("TITLE", "CTecInf - Sistemas Gerenciais");
+
+/**
  * Definição de estilos CSS
  */
 define("FONT_SIZE", "16px");
@@ -70,6 +75,6 @@ define("PAGINATION_MAX_RESULTS", 1000);
  * Menu do diretório <i>view</i>
  */
 define("MENU_OPTIONS", serialize(array(
-    "Clientes"=>"Cliente/",
-    "Cidades"=>"Municipio/"
+    "Clientes" => "Cliente/",
+    "Cidades" => "Municipio/"
 )));

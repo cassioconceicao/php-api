@@ -1,0 +1,33 @@
+<style type="text/css">
+
+    #menu-bar {color: $textColor;border-bottom: 1px solid $borderColor; margin-bottom: 12px}
+    #menu-bar span {font-size: 30px;cursor: pointer}
+    .overlay {height: 100%;width: 0;position: fixed;z-index: 1;top: 0;left: 0;background: $backgroundColor;opacity: 0.8;overflow-x: hidden;transition: 0.5s;border-top-right-radius: 15px;border-bottom-right-radius: 15px;border: 2px solid $borderColor}
+    .overlay-content {position: relative;top: 50px;width: 100%;text-align: center;margin-top: 30px}
+    .overlay a {padding: 8px;text-decoration: none;font-size: 36px;color: $textColor;display: block;transition: 0.3s}
+    .overlay a:hover, .overlay a:focus {background: $highlightColor}
+    .overlay .closebtn {color: #FF0000;position: absolute;top: 20px;right: 15px;font-size: 30px}
+    @media screen and (max-height: 450px) {.overlay a {font-size: $fontSize}.overlay .closebtn {font-size: 40px;top: 15px;right: 35px}}
+
+</style>
+
+<script type="text/javascript">
+    function openMenu() {
+        document.getElementById("menu").style.width = "80%";
+    }
+    function closeMenu() {
+        document.getElementById("menu").style.width = "0%";
+    }
+</script>
+
+<div id="menu-bar">
+    <span onclick="openMenu()">&#9776;</span> $title
+</div>
+
+<div id="menu" class="overlay">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeMenu()">&times;</a>
+    <div class="overlay-content">
+
+$menuList
+    </div>
+</div>

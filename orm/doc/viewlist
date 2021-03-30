@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (C) 2021 ctecinf.com.br
+ * Copyright (C) $year ctecinf.com.br
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,4 +18,4 @@
 
 require_once '../index.php';
 
-echo TableHelper::create(Municipio::class);
+echo TableHelper::create($className::class);
