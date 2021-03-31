@@ -81,7 +81,7 @@ if (isset($_GET["create"])) {
 
             if (!file_exists($fileName)) {
                 $handle = fopen($fileName, "w");
-                fwrite($handle, str_replace("\$year", date("Y"), str_replace("\$className", "{$name}", file_get_contents(ORM_PATH . "doc/model.txt"))));
+                fwrite($handle, str_replace("\$year", date("Y"), str_replace("\$className", "{$name}", file_get_contents(ORM_PATH . "code/model.php"))));
                 chmod($fileName, 0777);
                 fclose($handle);
             }
@@ -90,7 +90,7 @@ if (isset($_GET["create"])) {
 
             if (!file_exists($fileName)) {
                 $handle = fopen($fileName, "w");
-                fwrite($handle, str_replace("\$year", date("Y"), str_replace("\$className", "{$name}", file_get_contents(ORM_PATH . "doc/controller.txt"))));
+                fwrite($handle, str_replace("\$year", date("Y"), str_replace("\$className", "{$name}", file_get_contents(ORM_PATH . "code/controller.php"))));
                 chmod($fileName, 0777);
                 fclose($handle);
             }
@@ -103,14 +103,14 @@ if (isset($_GET["create"])) {
 
                 if (!file_exists($fileName . "index.php")) {
                     $handle = fopen($fileName . "index.php", "w");
-                    fwrite($handle, str_replace("\$year", date("Y"), str_replace("\$className", "{$name}", file_get_contents(ORM_PATH . "doc/viewlist.txt"))));
+                    fwrite($handle, str_replace("\$year", date("Y"), str_replace("\$className", "{$name}", file_get_contents(ORM_PATH . "code/view-list.php"))));
                     chmod($fileName . "index.php", 0777);
                     fclose($handle);
                 }
 
                 if (!file_exists($fileName . "form.php")) {
                     $handle = fopen($fileName . "form.php", "w");
-                    fwrite($handle, str_replace("\$year", date("Y"), str_replace("\$className", "{$name}", file_get_contents(ORM_PATH . "doc/viewform.txt"))));
+                    fwrite($handle, str_replace("\$year", date("Y"), str_replace("\$className", "{$name}", file_get_contents(ORM_PATH . "code/view-form.php"))));
                     chmod($fileName . "form.php", 0777);
                     fclose($handle);
                 }
@@ -212,12 +212,17 @@ function isMobile() {
 function getHTMLHead($spinner = true, $charset = "UTF-8") {
 
     $html = "<!DOCTYPE html>\n";
+    $html .= "<head>\n";
     $html .= "<meta charset=\"{$charset}\" />\n";
     $html .= "<title>" . TITLE . "</title>\n";
     $html .= "<meta name=\"viewport\" content=\"width=device-width, initial-scale=0.70, maximum-scale=1.0, minimum-scale=0.70\" />\n";
+    //$html .= "<link type=\"text/css\" rel=\"stylesheet\" href=\"" . ORM_PATH . "css/default.css\"/>\n";
+    $html .= "<style type=\"text/css\">\n" . getCodeFile("default.css") . "</style>\n";
+    $html .= "<script type=\"text/javascript\" src=\"" . ORM_PATH . "js/default.js\"></script>\n";
+    $html .= "</head>\n\n";
 
     if ($spinner) {
-        $html .= file_get_contents(ORM_PATH . "doc/spinner.txt");
+        $html .= getCodeFile("spinner.html");
     }
 
     return $html;
@@ -231,38 +236,45 @@ function getMenu() {
         $menuList .= "<a href=\"" . VIEW_PATH . "{$url}\">{$label}</a>\n";
     }
 
-    $html = getDocFile("menu.txt");
+    $html = getCodeFile("menu.html");
     $html = str_replace("\$menuList", $menuList, $html);
 
     return $html;
 }
 
-function getDocFile($file, $className = false, $url = false) {
+function getCodeFile($file, $className = false, $url = false) {
 
-    $str = file_get_contents(ORM_PATH . "doc/{$file}");
+    $str = file_get_contents(ORM_PATH . "code/{$file}");
 
-    if ($className) {
-        $str = str_replace("\$className", $className, $str);
+    if (!$str) {
+        return false;
+    } else {
+
+        if ($className) {
+            $str = str_replace("\$className", $className, $str);
+        }
+
+        if ($url) {
+            $str = str_replace("\$url", $url, $str);
+        }
+
+        $str = str_replace("\$title", TITLE, $str);
+        $str = str_replace("\$fontSize", FONT_SIZE, $str);
+        $str = str_replace("\$backgroundColor", BACKGROUND_COLOR, $str);
+        $str = str_replace("\$rowColor", ROW_COLOR, $str);
+        $str = str_replace("\$highlightColor", HIGHLIGHT_COLOR, $str);
+        $str = str_replace("\$textColor", TEXT_COLOR, $str);
+        $str = str_replace("\$headColor", HEAD_COLOR, $str);
+        $str = str_replace("\$headTextColor", HEAD_TEXT_COLOR, $str);
+        $str = str_replace("\$borderColor", BORDER_COLOR, $str);
+        $str = str_replace("\$buttonColor", BUTTON_COLOR, $str);
+        $str = str_replace("\$saveIcon", SAVE_ICON, $str);
+        $str = str_replace("\$deleteIcon", DELETE_ICON, $str);
+        $str = str_replace("\$searchIcon", SEARCH_ICON, $str);
+        $str = str_replace("\$homeIcon", HOME_ICON, $str);
+        $str = str_replace("\$calendarIcon", CALENDAR_ICON, $str);
+        $str = str_replace("\$paginationMaxResults", PAGINATION_MAX_RESULTS, $str);
+
+        return $str;
     }
-
-    if ($url) {
-        $str = str_replace("\$url", $url, $str);
-    }
-
-    $str = str_replace("\$title", TITLE, $str);
-    $str = str_replace("\$fontSize", FONT_SIZE, $str);
-    $str = str_replace("\$backgroundColor", BACKGROUND_COLOR, $str);
-    $str = str_replace("\$rowColor", ROW_COLOR, $str);
-    $str = str_replace("\$highlightColor", HIGHLIGHT_COLOR, $str);
-    $str = str_replace("\$textColor", TEXT_COLOR, $str);
-    $str = str_replace("\$headColor", HEAD_COLOR, $str);
-    $str = str_replace("\$headTextColor", HEAD_TEXT_COLOR, $str);
-    $str = str_replace("\$borderColor", BORDER_COLOR, $str);
-    $str = str_replace("\$saveIcon", SAVE_ICON, $str);
-    $str = str_replace("\$deleteIcon", DELETE_ICON, $str);
-    $str = str_replace("\$searchIcon", SEARCH_ICON, $str);
-    $str = str_replace("\$homeIcon", HOME_ICON, $str);
-    $str = str_replace("\$paginationMaxResults", PAGINATION_MAX_RESULTS, $str);
-
-    return $str;
 }

@@ -44,7 +44,7 @@ class FormHelper {
         $this->className = $reflection->getName();
         $this->instance = $reflection->newInstanceWithoutConstructor();
         $this->controllerPath = CONTROLLER_PATH . $this->className . ".php";
-        $this->html = getDocFile("form-helper.txt", $this->className, $this->controllerPath);
+        $this->html = getCodeFile("form-helper.html", $this->className, $this->controllerPath);
     }
 
     /**

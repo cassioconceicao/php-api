@@ -41,7 +41,7 @@ class TableHelper {
 
         $this->className = $reflection->getName();
         $this->controllerPath = CONTROLLER_PATH . $this->className . ".php";
-        $this->html = getDocFile("table-helper.txt", $this->className, $this->controllerPath);
+        $this->html = getCodeFile("table-helper.html", $this->className, $this->controllerPath);
     }
 
     /**

@@ -1,6 +1,3 @@
-<style type="text/css">
-    #form$className fieldset {border-radius: 5px;border: 1px solid $borderColor;margin-bottom: 12px}
-</style>
 <script type="text/javascript">
 
     function initForm$className() {

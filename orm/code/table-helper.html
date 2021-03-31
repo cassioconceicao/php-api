@@ -1,0 +1,15 @@
+<input type="text" class="input input-search" id="search$className" onkeyup="filterTable('table$className', this.value)" placeholder="Pesquisar" />
+<div class="pagination"></div>
+<table class="table" id="table$className">
+    <thead>
+        <tr>
+            <th style="width:30px">Código</th><th>Descrição</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+<div class="pagination"></div>
+<script type="text/javascript">
+    initPagination('table$className', $paginationMaxResults, '$url', 'search$className');
+</script>
+
