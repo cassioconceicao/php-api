@@ -1,9 +1,10 @@
-<input type="text" class="input input-search" id="search$className" onkeyup="filterTable('table$className', this.value)" placeholder="Pesquisar" />
+<input type="search" class="input" id="search$className" onkeyup="filterTable('table$className', this.value)" placeholder="Pesquisar" />
 <div class="pagination"></div>
 <table class="table" id="table$className">
     <thead>
         <tr>
-            <th style="width:30px">Código</th><th>Descrição</th>
+            <th style="width:30px" onclick="sortTable('table$className', 0)">Código</th><th onclick="sortTable('table$className', 1)">Descrição</th>
+            <!--<th style="width:30px">Código</th><th>Descrição</th>-->
         </tr>
     </thead>
     <tbody></tbody>

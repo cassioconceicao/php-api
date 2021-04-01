@@ -216,10 +216,10 @@ function getHTMLHead($spinner = true, $charset = "UTF-8") {
     $html .= "<meta charset=\"{$charset}\" />\n";
     $html .= "<title>" . TITLE . "</title>\n";
     $html .= "<meta name=\"viewport\" content=\"width=device-width, initial-scale=0.70, maximum-scale=1.0, minimum-scale=0.70\" />\n";
-    //$html .= "<link type=\"text/css\" rel=\"stylesheet\" href=\"" . ORM_PATH . "css/default.css\"/>\n";
-    $html .= "<style type=\"text/css\">\n" . getCodeFile("default.css") . "</style>\n";
+    $html .= "<link type=\"text/css\" rel=\"stylesheet\" href=\"" . ORM_PATH . "css/default.css\"/>\n";
     $html .= "<script type=\"text/javascript\" src=\"" . ORM_PATH . "js/default.js\"></script>\n";
     $html .= "</head>\n\n";
+    $html .= getCodeFile("top-button.html");
 
     if ($spinner) {
         $html .= getCodeFile("spinner.html");
@@ -233,7 +233,7 @@ function getMenu() {
     $menu = unserialize(MENU_OPTIONS);
     $menuList = "";
     foreach ($menu as $label => $url) {
-        $menuList .= "<a href=\"" . VIEW_PATH . "{$url}\">{$label}</a>\n";
+        $menuList .= "<a href=\"" . VIEW_PATH . "{$url}\">&#9755; {$label}</a>\n";
     }
 
     $html = getCodeFile("menu.html");
@@ -259,20 +259,6 @@ function getCodeFile($file, $className = false, $url = false) {
         }
 
         $str = str_replace("\$title", TITLE, $str);
-        $str = str_replace("\$fontSize", FONT_SIZE, $str);
-        $str = str_replace("\$backgroundColor", BACKGROUND_COLOR, $str);
-        $str = str_replace("\$rowColor", ROW_COLOR, $str);
-        $str = str_replace("\$highlightColor", HIGHLIGHT_COLOR, $str);
-        $str = str_replace("\$textColor", TEXT_COLOR, $str);
-        $str = str_replace("\$headColor", HEAD_COLOR, $str);
-        $str = str_replace("\$headTextColor", HEAD_TEXT_COLOR, $str);
-        $str = str_replace("\$borderColor", BORDER_COLOR, $str);
-        $str = str_replace("\$buttonColor", BUTTON_COLOR, $str);
-        $str = str_replace("\$saveIcon", SAVE_ICON, $str);
-        $str = str_replace("\$deleteIcon", DELETE_ICON, $str);
-        $str = str_replace("\$searchIcon", SEARCH_ICON, $str);
-        $str = str_replace("\$homeIcon", HOME_ICON, $str);
-        $str = str_replace("\$calendarIcon", CALENDAR_ICON, $str);
         $str = str_replace("\$paginationMaxResults", PAGINATION_MAX_RESULTS, $str);
 
         return $str;
