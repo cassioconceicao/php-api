@@ -57,7 +57,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 .menu-bar span {font-size: 30px;cursor: pointer}
 
 .overlay {background-color: var(--head-color);height: 95%;width: 0;position: fixed;z-index: 1;top: 0;left: 0;opacity: 0.95;overflow-x: hidden;transition: 0.5s;border-top-right-radius: 15px;border-bottom-right-radius: 15px;border: 2px solid var(--border-color);box-shadow: inset 0 3px 6px rgba(0,0,0,0.1);box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)}
-.overlay-content {position: relative;top: 50px;width: 95%;padding-left: 20px;margin-top: 30px}
+.overlay-content {position: relative;top: 50px;padding-left: 20px;margin-top: 30px}
 .overlay a {padding: 8px;text-decoration: none;font-size: 24px;color: var(--head-text-color);display: block;transition: 0.3s;margin-bottom: 5px}
 .overlay a:hover, .overlay a:focus {opacity: 0.4}
 .overlay .closebtn {color: #FF0000;position: absolute;top: 20px;right: 15px;font-size: 30px}
@@ -70,6 +70,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 .input[type=date]::-webkit-inner-spin-button {display: none}
 .input[type=date]::-webkit-calendar-picker-indicator {opacity: 0}
 .input[type=search] {background-image: var(--search-icon);background-position: 5px 5px;background-repeat: no-repeat;padding: 12px 12px 12px 40px;width: 85%}
+
+.table-action {background: var(--input-color);color: var(--text-color);border-radius: 5px;border: 1px solid var(--border-color);font-size: var(--font-size);padding: 12px;margin-bottom: 12px;box-shadow: inset 0 3px 6px rgba(0,0,0,0.2)}
 
 .table {color: var(--text-color);border-collapse: collapse;width: 100%;border: 1px solid var(--border-color);font-size: var(--font-size);margin-bottom: 12px;box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 3px 10px 0 rgba(0,0,0,0.19)}
 .table thead th, .table tbody td {text-align: left;padding: 12px}
@@ -101,5 +103,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 .list a:nth-child(odd) {background-color: var(--row-color)}
 .list a:hover {background-color: var(--highlight-color)}
 
-.top-button {display: none;position: fixed;opacity: 0.9;bottom: 20px;right: 30px;z-index: 99;font-size: 24px;border: 1px solid var(--border-color);outline: none;background-color: var(--button-color);box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 3px 10px 0 rgba(0,0,0,0.19);transition-duration: 0.4s;color: var(--button-text-color);cursor: pointer;padding: 15px;border-radius: 5px}
-.top-button:hover {opacity: 0.5}
+.top-button {display: none;position: fixed;opacity: 0.4;bottom: 20px;right: 30px;z-index: 99;font-size: 24px;border: 1px solid var(--border-color);outline: none;background-color: var(--button-color);box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 3px 10px 0 rgba(0,0,0,0.19);transition-duration: 0.4s;color: var(--button-text-color);cursor: pointer;padding: 15px;border-radius: 5px}
+.top-button:hover {opacity: 0.7}

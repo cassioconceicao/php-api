@@ -1,10 +1,12 @@
 <input type="search" class="input" id="search$className" onkeyup="filterTable('table$className', this.value)" placeholder="Pesquisar" />
-<div class="pagination"></div>
+<div class="pagination"></div><br />
+<select class="table-action">
+    <option value=""> - Com Selecionado(s) - </option>
+</select>
 <table class="table" id="table$className">
     <thead>
         <tr>
-            <th style="width:30px" onclick="sortTable('table$className', 0)">Código</th><th onclick="sortTable('table$className', 1)">Descrição</th>
-            <!--<th style="width:30px">Código</th><th>Descrição</th>-->
+            <th style="width:0"><input type="checkbox" value="" onchange="toggleTable(this)" /></th><th style="width:0" onclick="sortTable('table$className', 1)">Código</th><th onclick="sortTable('table$className', 2)">Descrição</th>
         </tr>
     </thead>
     <tbody></tbody>

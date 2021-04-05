@@ -20,9 +20,8 @@
  * 
  * @param {string} url
  * @param {string} params [param1=value1&param2=value2...]
- * @param {function} callbackFunction Função para executar na resposta [function(response){ ...implementar método }]
+ * @param {function} callbackFunction Função para executar na resposta [function(response, error){ ...implementar método }]
  * @param {string} method POST|GET DEFAULT "POST" [OPCIONAL]
- * @returns {undefined}
  */
 function getJSON(url, params, callbackFunction, method) {
 
@@ -39,11 +38,13 @@ function getJSON(url, params, callbackFunction, method) {
 
         if (this.readyState === 4 && this.status === 200) {
 
+            var error = null;
+
             if (typeof ajax.response.error !== 'undefined') {
-                alert(ajax.response.error);
-            } else {
-                callbackFunction(ajax.response);
+                error = ajax.response.error;
             }
+
+            callbackFunction(ajax.response, error);
         }
     };
 
@@ -51,11 +52,15 @@ function getJSON(url, params, callbackFunction, method) {
 }
 
 /**
+ * Funções para ordenação, paginação e filtro de tabela
+ * *****************************************************************************
+ */
+
+/**
  * Ordena tabela pela coluna
  * 
  * @param {string} tableId Identificador da tabela
  * @param {int} columnIndex Índice da coluna
- * @returns {undefined}
  */
 function sortTable(tableId, columnIndex) {
 
@@ -111,7 +116,6 @@ function sortTable(tableId, columnIndex) {
  * 
  * @param {type} tableId Identificador da tabela
  * @param {string} filterValue Valor para pesquisa na tabela
- * @returns {undefined}
  */
 function filterTable(tableId, filterValue) {
 
@@ -142,44 +146,48 @@ function filterTable(tableId, filterValue) {
  * @param {string} url
  * @param {string} filterId Identificador o campo de filtro da tabela [OPCIONAL]
  * @param {string} formURL URL para direcionar ao clicar sobre a linha da tabela passando como parâmetro <i>ID</i> do registro.[OPCIONAL]
- * @returns {undefined}
  */
 function initPagination(tableId, limit, url, filterId, formURL) {
 
-    getJSON(url, 'action=count', function (response) {
+    getJSON(url, 'action=count', function (response, error) {
 
-        var pages = Math.ceil(response.total / limit);
+        if (error !== null) {
+            alert(error);
+        } else {
 
-        if (pages > 1) {
+            var pages = Math.ceil(response.total / limit);
 
-            var div = document.getElementsByClassName("pagination");
+            if (pages > 1) {
 
-            for (var i = 0; i < div.length; i++) {
+                var div = document.getElementsByClassName("pagination");
 
-                var link = document.createElement("a");
-                link.href = "javascript:loadPage('" + tableId + "', 1, " + limit + ", '" + url + "', '" + filterId + "'" + (typeof formURL !== 'undefined' && formURL.length > 0 ? ", '" + formURL + "'" : "") + ")";
-                link.innerHTML = "&laquo";
-                div[i].appendChild(link);
+                for (var i = 0; i < div.length; i++) {
 
-                for (var j = 1; j < pages + 1; j++) {
+                    var link = document.createElement("a");
+                    link.href = "javascript:loadPage('" + tableId + "', 1, " + limit + ", '" + url + "', '" + filterId + "'" + (typeof formURL !== 'undefined' && formURL.length > 0 ? ", '" + formURL + "'" : "") + ")";
+                    link.innerHTML = "&laquo";
+                    div[i].appendChild(link);
+
+                    for (var j = 1; j < pages + 1; j++) {
+
+                        link = document.createElement("a");
+                        link.href = "javascript:loadPage('" + tableId + "', " + j + ", " + limit + ", '" + url + "', '" + filterId + "'" + (typeof formURL !== 'undefined' && formURL.length > 0 ? ", '" + formURL + "'" : "") + ")";
+                        link.innerHTML = j;
+                        if (j === 1) {
+                            link.className = "active";
+                        }
+                        div[i].appendChild(link);
+                    }
 
                     link = document.createElement("a");
-                    link.href = "javascript:loadPage('" + tableId + "', " + j + ", " + limit + ", '" + url + "', '" + filterId + "'" + (typeof formURL !== 'undefined' && formURL.length > 0 ? ", '" + formURL + "'" : "") + ")";
-                    link.innerHTML = j;
-                    if (j === 1) {
-                        link.className = "active";
-                    }
+                    link.href = "javascript:loadPage('" + tableId + "', " + pages + ", " + limit + ", '" + url + "', '" + filterId + "'" + (typeof formURL !== 'undefined' && formURL.length > 0 ? ", '" + formURL + "'" : "") + ")";
+                    link.innerHTML = "&raquo;";
                     div[i].appendChild(link);
                 }
-
-                link = document.createElement("a");
-                link.href = "javascript:loadPage('" + tableId + "', " + pages + ", " + limit + ", '" + url + "', '" + filterId + "'" + (typeof formURL !== 'undefined' && formURL.length > 0 ? ", '" + formURL + "'" : "") + ")";
-                link.innerHTML = "&raquo;";
-                div[i].appendChild(link);
             }
-        }
 
-        loadPage(tableId, 1, limit, url, filterId, formURL);
+            loadPage(tableId, 1, limit, url, filterId, formURL);
+        }
     });
 }
 
@@ -192,7 +200,6 @@ function initPagination(tableId, limit, url, filterId, formURL) {
  * @param {string} url URL para consulta via ajax. Parâmetros do <i>send</i> [action=find&offset=?&limit=?]
  * @param {string} filterId Identificador do campo de filtro da tabela [OPCIONAL]
  * @param {string} formURL URL para direcionar ao clicar sobre a linha da tabela passando como parâmetro <i>ID</i> do registro.[OPCIONAL]
- * @returns {undefined}
  */
 function loadPage(tableId, page, limit, url, filterId, formURL) {
 
@@ -205,82 +212,138 @@ function loadPage(tableId, page, limit, url, filterId, formURL) {
 
     var offset = page === 1 ? 0 : (page - 1) * limit;
 
-    getJSON(url, 'action=find&offset=' + offset + '&limit=' + limit, function (response) {
+    getJSON(url, 'action=find&offset=' + offset + '&limit=' + limit, function (response, error) {
 
-        var rows = "";
-        response.forEach(function (item) {
-            rows += "<tr><td" + (typeof formURL !== 'undefined' ? " onclick=\"window.location='" + formURL + "?id=" + item.value + "'\"" : " onclick=\"window.location='form.php?id=" + item.value + "'\"") + ">" + item.value + "</td><td" + (typeof formURL !== 'undefined' ? " onclick=\"window.location='" + formURL + "?id=" + item.value + "'\"" : " onclick=\"window.location='form.php?id=" + item.value + "'\"") + ">" + item.label + "</td></tr>";
-        });
+        if (error !== null) {
+            alert(error);
+        } else {
+            var rows = "";
+            response.forEach(function (item) {
+                rows += "<tr><td><input class=\"table-checkbox\" type=\"checkbox\" value=\"" + item.value + "\" /></td><td" + (typeof formURL !== 'undefined' ? " onclick=\"window.location='" + formURL + "?id=" + item.value + "'\"" : " onclick=\"window.location='form.php?id=" + item.value + "'\"") + ">" + item.value + "</td><td" + (typeof formURL !== 'undefined' ? " onclick=\"window.location='" + formURL + "?id=" + item.value + "'\"" : " onclick=\"window.location='form.php?id=" + item.value + "'\"") + ">" + item.label + "</td></tr>";
+            });
 
-        document.getElementById(tableId).getElementsByTagName("TBODY")[0].innerHTML = rows;
+            document.getElementById(tableId).getElementsByTagName("TBODY")[0].innerHTML = rows;
 
-        var div = document.getElementsByClassName("pagination");
+            var div = document.getElementsByClassName("pagination");
 
-        for (var i = 0; i < div.length; i++) {
-            var href = div[i].getElementsByTagName("a");
-            for (var j = 0; j < href.length; j++) {
-                href[j].className = "";
-                if (j === page) {
-                    href[j].className = "active";
+            for (var i = 0; i < div.length; i++) {
+                var href = div[i].getElementsByTagName("a");
+                for (var j = 0; j < href.length; j++) {
+                    href[j].className = "";
+                    if (j === page) {
+                        href[j].className = "active";
+                    }
                 }
             }
-        }
 
-        var filter = document.getElementById(filterId);
+            var filter = document.getElementById(filterId);
 
-        if (filter !== null) {
-            filterTable(tableId, filter.value);
-            filter.focus();
-        }
+            if (filter !== null) {
+                filterTable(tableId, filter.value);
+                filter.focus();
+            }
 
-        if (spinner !== null) {
-            spinner.style.display = "none";
+            if (spinner !== null) {
+                spinner.style.display = "none";
+            }
         }
     });
 }
 
 /**
+ * Marca ou desmarca todos checkbox com ID da tabela
+ * 
+ * @param {element} source
+ */
+function toggleTable(source) {
+    var checkboxes = document.getElementsByClassName("table-checkbox");
+    for (var i = 0; i < checkboxes.length; i++) {
+        checkboxes[i].checked = source.checked;
+    }
+}
+
+/**
+ * Funções do Menu
+ * *****************************************************************************
+ */
+/**
  * Abre Menu lateral
- * @returns {undefined}
  */
 function openMenu() {
-    document.getElementById("menu").style.width = "80%";
+    document.getElementById("menu").style.width = "300px";
 }
 
 /**
  * Fecha Menu lateral
- * @returns {undefined}
  */
 function closeMenu() {
-    document.getElementById("menu").style.width = "0%";
+    document.getElementById("menu").style.width = "0px";
 }
 
-//function autocomplete(searchId, targetId, url) {
-//
-//    var search = document.getElementById(searchId);
-//    var target = document.getElementById(targetId);
-//
-//    getJSON(url, 'action=find&term=' + search.value + '&limit=' + 8, function (response) {
-//
-//        if (typeof response.error !== 'undefined') {
-//            target.innerHTML = "";
-//            alert(response.error);
-//        } else if (response.length > 0) {
-//            var list = "";
-//            for (const op of ajax.response) {
-//                list += "<a href=\"javascript:setSeleceted$className('" + op.value + "', '" + op.label + "')\">" + op.label + "</a>";
-//            }
-//            target.innerHTML = list;
-//            target.style.border = "1px solid $borderColor";
-//
-//        } else {
-//            target.innerHTML = "";
-//            target.style.border = "none";
-//        }
-//    });
-//
-//}
+/**
+ * Funções do campo <i>autocomplete</i>
+ */
+/**
+ * AutoComplete "onkeyup='autoComplete(params...)'"
+ * 
+ * @param {string} searchId Identificador do INPUT Label do campo.
+ * @param {string} fieldId Identificador do INPUT Value do campo ID da coluna, tipo hidden.
+ * @param {string} targetId Identificador da DIV onde vai a lista de resultados para selecionar.
+ * @param {string} url URL para consulta AJAX.
+ */
+function autoComplete(searchId, fieldId, targetId, url) {
 
+    var search = document.getElementById(searchId);
+    var target = document.getElementById(targetId);
+
+    getJSON(url, 'action=find&term=' + search.value + '&limit=' + 8, function (response, error) {
+
+        if (error !== null) {
+            target.innerHTML = "";
+            alert(error);
+        } else if (response.length > 0) {
+
+            var list = "";
+
+            response.forEach(function (item) {
+                list += "<a href=\"javascript:setSelectedAutoComplete('" + fieldId + "','" + searchId + "','" + item.value + "', '" + item.label + "', '" + targetId + "')\">" + item.label + "</a>";
+            });
+
+            target.innerHTML = list;
+            target.style.border = "1px solid $borderColor";
+
+        } else {
+            target.innerHTML = "";
+            target.style.border = "none";
+        }
+    });
+}
+/**
+ * Seleção do AutoComplete
+ * 
+ * @param {string} valueId
+ * @param {string} labelId
+ * @param {string} value
+ * @param {string} label
+ * @param {string} targetId
+ */
+function setSelectedAutoComplete(valueId, labelId, value, label, targetId) {
+    document.getElementById(valueId).value = value;
+    document.getElementById(labelId).value = label;
+    document.getElementById(targetId).innerHTML = "";
+    document.getElementById(targetId).style.border = "none";
+}
+
+
+/**
+ * Funções de formulário
+ * *****************************************************************************
+ */
+/**
+ * Inicia valores do formulário
+ * 
+ * @param {string} formId
+ */
 function initForm(formId) {
 
     var spinner = document.getElementById("spinner");
@@ -294,16 +357,21 @@ function initForm(formId) {
 
     if (document.getElementById("id").value > 0) {
 
-        getJSON(form.action, 'action=find&id=' + document.getElementById("id").value, function (response) {
+        getJSON(form.action, 'action=find&id=' + document.getElementById("id").value, function (response, error) {
 
-            for (var i = 0; i < form.elements.length; i++) {
-                if (form.elements[i].name.indexOf('data') !== -1) {
-                    form.elements[i].value = response.data[form.elements[i].id];
+            if (error !== null) {
+                alert(error);
+            } else {
+
+                for (var i = 0; i < form.elements.length; i++) {
+                    if (form.elements[i].name.indexOf('data') !== -1) {
+                        form.elements[i].value = response.data[form.elements[i].id];
+                    }
                 }
-            }
 
-            if (spinner !== null) {
-                spinner.style.display = "none";
+                if (spinner !== null) {
+                    spinner.style.display = "none";
+                }
             }
         });
 
@@ -325,6 +393,10 @@ function deleteCliente(id) {
     }
 }
 
+/**
+ * Funções botão para o topo da tela
+ * *****************************************************************************
+ */
 window.onscroll = function () {
 
     var button = document.getElementById("top-button");
@@ -336,6 +408,9 @@ window.onscroll = function () {
     }
 };
 
+/**
+ * Posiciona no topo da página
+ */
 function topScroll() {
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;

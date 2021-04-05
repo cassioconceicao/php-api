@@ -62,6 +62,10 @@ class FormHelper {
         return $form;
     }
 
+    public function createField($name, $type) {
+        
+    }
+    
     public function getModelClassName() {
         return $this->className;
     }
@@ -73,5 +77,4 @@ class FormHelper {
     public function __toString() {
         return $this->html;
     }
-
 }

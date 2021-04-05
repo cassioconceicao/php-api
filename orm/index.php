@@ -53,7 +53,7 @@ if (isset($_GET["create"])) {
 
     try {
 
-        $pdo = new PDO(DB_DSN . ":host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PASS, unserialize(PDO_OPTIONS));
+        $pdo = new PDO(DB_DSN . ":host=" . DB_HOST . ";dbname=" . DB_NAME . (DB_DSN == "mysql" ? ";charset=utf8" : ""), DB_USER, DB_PASS, unserialize(PDO_OPTIONS));
         $st = $pdo->query($query);
         $rs = $st->fetchAll();
 
@@ -233,7 +233,7 @@ function getMenu() {
     $menu = unserialize(MENU_OPTIONS);
     $menuList = "";
     foreach ($menu as $label => $url) {
-        $menuList .= "<a href=\"" . VIEW_PATH . "{$url}\">&#9755; {$label}</a>\n";
+        $menuList .= "<a href=\"" . VIEW_PATH . "{$url}\">&#9758; {$label}</a>\n";
     }
 
     $html = getCodeFile("menu.html");
