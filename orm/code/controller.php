@@ -43,13 +43,13 @@ switch (getAction()) {
 
                 $obj = $className::findById(getId());
                 if (!$obj) {
-                    $return = json_encode(array("error" => "Registro não encontrado."));
+                    $return = json_encode(array("message" => "Registro não encontrado."));
                 } else {
                     $return = json_encode(array("value" => $obj->getId(), "label" => strval($obj), "data" => $obj->getData()));
                 }
             }
         } catch (Exception $ex) {
-            $return = json_encode(array("error" => $ex->getMessage()));
+            $return = json_encode(array("message" => $ex->getMessage()));
         }
 
         break;
@@ -59,9 +59,9 @@ switch (getAction()) {
         try {
             $obj = new $className();
             $obj->setData(getData());
-            $return = $obj->save() ? json_encode(array("success" => "Registro salvo com sucesso.")) : json_encode(array("error" => "Algo deu errado, tente novamente."));
+            $return = $obj->save() ? json_encode(array("message" => "Registro salvo com sucesso.")) : json_encode(array("message" => "Algo deu errado, tente novamente."));
         } catch (Exception $ex) {
-            $return = json_encode(array("error" => $ex->getMessage()));
+            $return = json_encode(array("message" => $ex->getMessage()));
         }
 
         break;
@@ -70,15 +70,30 @@ switch (getAction()) {
 
         try {
 
-            $obj = $className::findById(getId());
+            if (!getId()) {
 
-            if (!$obj) {
-                $return = json_encode(array("error" => "Registro não encontrado."));
+                foreach (getSelectedsId() as $id) {
+
+                    $obj = $className::findById($id);
+
+                    if (!$obj || !$obj->delete()) {
+                        throw new Exception("Registro(s) não encontrado(s).");
+                    }
+                }
+
+                $return = json_encode(array("message" => "Registro(s) apagado(s) com sucesso."));
             } else {
-                $return = $obj->delete() ? json_encode(array("success" => "Registro apagado com sucesso.")) : json_encode(array("error" => "Algo deu errado, tente novamente."));
+
+                $obj = $className::findById(getId());
+
+                if (!$obj || !$obj->delete()) {
+                    throw new Exception("Registro não encontrado.");
+                }
+                
+                $return = json_encode(array("message" => "Registro apagado com sucesso."));
             }
         } catch (Exception $ex) {
-            $return = json_encode(array("error" => $ex->getMessage()));
+            $return = json_encode(array("message" => $ex->getMessage()));
         }
 
         break;
@@ -88,13 +103,13 @@ switch (getAction()) {
         try {
             $return = json_encode(array("total" => $className::count()));
         } catch (Exception $ex) {
-            $return = json_encode(array("error" => $ex->getMessage()));
+            $return = json_encode(array("message" => $ex->getMessage()));
         }
 
         break;
 
     default:
-        $return = json_encode(array("error" => "Falta parâmetro 'action'."));
+        $return = json_encode(array("message" => "Falta parâmetro 'action'."));
         break;
 }
 

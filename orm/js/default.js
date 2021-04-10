@@ -15,15 +15,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+Number.prototype.format = function () {
+
+    var str = this.toString();
+
+    if (str === 'NaN') {
+        return "";
+    }
+
+    if (str.length === 1) {
+        str += ".00";
+    } else if (str.length > 1) {
+        var len = str.length - 2;
+        str = str.substring(0, len) + "." + str.substring(len);
+    }
+
+    var num = parseFloat(str);
+
+    return num.toFixed(2).replace('.', ',').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+};
+
 /**
  * Chamada AJAX com resposta arquivo JSON
  * 
  * @param {string} url
  * @param {string} params [param1=value1&param2=value2...]
- * @param {function} callbackFunction Função para executar na resposta [function(response, error){ ...implementar método }]
+ * @param {function} callbackFunction Função para executar na resposta [function(response, message){ ...implementar método }]
  * @param {string} method POST|GET DEFAULT "POST" [OPCIONAL]
  */
-function getJSON(url, params, callbackFunction, method) {
+function ajax(url, params, callbackFunction, method) {
 
     if (typeof method === 'undefined') {
         method = "POST";
@@ -38,13 +58,13 @@ function getJSON(url, params, callbackFunction, method) {
 
         if (this.readyState === 4 && this.status === 200) {
 
-            var error = null;
+            var message = null;
 
-            if (typeof ajax.response.error !== 'undefined') {
-                error = ajax.response.error;
+            if (typeof ajax.response.message !== 'undefined') {
+                message = ajax.response.message;
             }
 
-            callbackFunction(ajax.response, error);
+            callbackFunction(ajax.response, message);
         }
     };
 
@@ -149,17 +169,17 @@ function filterTable(tableId, filterValue) {
  */
 function initPagination(tableId, limit, url, filterId, formURL) {
 
-    getJSON(url, 'action=count', function (response, error) {
+    ajax(url, 'action=count', function (response, message) {
 
-        if (error !== null) {
-            alert(error);
+        if (message !== null) {
+            alert(message);
         } else {
 
             var pages = Math.ceil(response.total / limit);
 
             if (pages > 1) {
 
-                var div = document.getElementsByClassName("pagination");
+                var div = document.getElementsByClassName("ctecinf-pagination");
 
                 for (var i = 0; i < div.length; i++) {
 
@@ -212,26 +232,26 @@ function loadPage(tableId, page, limit, url, filterId, formURL) {
 
     var offset = page === 1 ? 0 : (page - 1) * limit;
 
-    getJSON(url, 'action=find&offset=' + offset + '&limit=' + limit, function (response, error) {
+    ajax(url, 'action=find&offset=' + offset + '&limit=' + limit, function (response, message) {
 
-        if (error !== null) {
-            alert(error);
+        if (message !== null) {
+            alert(message);
         } else {
             var rows = "";
             response.forEach(function (item) {
-                rows += "<tr><td><input class=\"table-checkbox\" type=\"checkbox\" value=\"" + item.value + "\" /></td><td" + (typeof formURL !== 'undefined' ? " onclick=\"window.location='" + formURL + "?id=" + item.value + "'\"" : " onclick=\"window.location='form.php?id=" + item.value + "'\"") + ">" + item.value + "</td><td" + (typeof formURL !== 'undefined' ? " onclick=\"window.location='" + formURL + "?id=" + item.value + "'\"" : " onclick=\"window.location='form.php?id=" + item.value + "'\"") + ">" + item.label + "</td></tr>";
+                rows += "<tr><td><input class=\"ctecinf-table-checkbox\" type=\"checkbox\" id=\"selecteds_id\" name=\"selecteds_id[]\" value=\"" + item.value + "\" /></td><td" + (typeof formURL !== 'undefined' ? " onclick=\"window.location='" + formURL + "?id=" + item.value + "'\"" : " onclick=\"window.location='form.php?id=" + item.value + "'\"") + ">" + item.value + "</td><td" + (typeof formURL !== 'undefined' ? " onclick=\"window.location='" + formURL + "?id=" + item.value + "'\"" : " onclick=\"window.location='form.php?id=" + item.value + "'\"") + ">" + item.label + "</td></tr>";
             });
 
             document.getElementById(tableId).getElementsByTagName("TBODY")[0].innerHTML = rows;
 
-            var div = document.getElementsByClassName("pagination");
+            var div = document.getElementsByClassName("ctecinf-pagination");
 
             for (var i = 0; i < div.length; i++) {
                 var href = div[i].getElementsByTagName("a");
                 for (var j = 0; j < href.length; j++) {
                     href[j].className = "";
                     if (j === page) {
-                        href[j].className = "active";
+                        href[j].className = "ctecinf-pagination-active";
                     }
                 }
             }
@@ -256,9 +276,39 @@ function loadPage(tableId, page, limit, url, filterId, formURL) {
  * @param {element} source
  */
 function toggleTable(source) {
-    var checkboxes = document.getElementsByClassName("table-checkbox");
+    var checkboxes = document.getElementsByClassName("ctecinf-table-checkbox");
     for (var i = 0; i < checkboxes.length; i++) {
         checkboxes[i].checked = source.checked;
+    }
+}
+
+/**
+ * * AJAX com ID's selecionados no checkbox da table
+ * 
+ * @param {string} action Ação no controller, "delete", ...
+ * @param {string} url URL do controller
+ */
+function actionSelectedsIdTable(action, url) {
+
+    if (action.length > 0) {
+
+        var checkboxes = document.getElementsByClassName("ctecinf-table-checkbox");
+        var params = [];
+
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) {
+                params[params.length] = "selecteds_id[]=" + checkboxes[i].value;
+                checkboxes[i].checked = false;
+            }
+        }
+
+        if (params.length === 0) {
+            alert("Nenhum registro selecionado.");
+        } else {
+            ajax(url, "action=" + action + "&" + params.join("&"), function (response, message) {
+                alert(message);
+            });
+        }
     }
 }
 
@@ -296,11 +346,11 @@ function autoComplete(searchId, fieldId, targetId, url) {
     var search = document.getElementById(searchId);
     var target = document.getElementById(targetId);
 
-    getJSON(url, 'action=find&term=' + search.value + '&limit=' + 8, function (response, error) {
+    ajax(url, 'action=find&term=' + search.value + '&limit=' + 8, function (response, message) {
 
-        if (error !== null) {
+        if (message !== null) {
             target.innerHTML = "";
-            alert(error);
+            alert(message);
         } else if (response.length > 0) {
 
             var list = "";
@@ -357,10 +407,10 @@ function initForm(formId) {
 
     if (document.getElementById("id").value > 0) {
 
-        getJSON(form.action, 'action=find&id=' + document.getElementById("id").value, function (response, error) {
+        ajax(form.action, 'action=find&id=' + document.getElementById("id").value, function (response, message) {
 
-            if (error !== null) {
-                alert(error);
+            if (message !== null) {
+                alert(message);
             } else {
 
                 for (var i = 0; i < form.elements.length; i++) {
@@ -397,17 +447,6 @@ function deleteCliente(id) {
  * Funções botão para o topo da tela
  * *****************************************************************************
  */
-window.onscroll = function () {
-
-    var button = document.getElementById("top-button");
-
-    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-        button.style.display = "block";
-    } else {
-        button.style.display = "none";
-    }
-};
-
 /**
  * Posiciona no topo da página
  */
@@ -415,3 +454,117 @@ function topScroll() {
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
 }
+
+/**
+ * Funções de teclado de entrada
+ * *****************************************************************************
+ */
+/**
+ * Teclado numérico
+ * 
+ * @param {element} input "onclick='numericKeyboard(this)'"
+ */
+function numericKeyboard(input) {
+
+    var keyboard = document.getElementById(input.id + "-keyboard");
+
+    if (keyboard.innerHTML === "") {
+
+        var table = document.createElement("TABLE");
+
+        tr = document.createElement("TR");
+        tr.innerHTML = "<td onclick=\"setNumericValue('" + input.id + "', '7')\">7</td><td onclick=\"setNumericValue('" + input.id + "', '8')\">8</td><td onclick=\"setNumericValue('" + input.id + "', '9')\">9</td>";
+        table.appendChild(tr);
+
+        tr = document.createElement("TR");
+        tr.innerHTML = "<td onclick=\"setNumericValue('" + input.id + "', '4')\">4</td><td onclick=\"setNumericValue('" + input.id + "', '5')\">5</td><td onclick=\"setNumericValue('" + input.id + "', '6')\">6</td>";
+        table.appendChild(tr);
+
+        tr = document.createElement("TR");
+        tr.innerHTML = "<td onclick=\"setNumericValue('" + input.id + "', '1')\">1</td><td onclick=\"setNumericValue('" + input.id + "', '2')\">2</td><td onclick=\"setNumericValue('" + input.id + "', '3')\">3</td>";
+        table.appendChild(tr);
+
+        tr = document.createElement("TR");
+        tr.innerHTML = "<td colspan=\"2\" onclick=\"setNumericValue('" + input.id + "', '+/-')\">+/-</td><td onclick=\"setNumericValue('" + input.id + "', '0')\">0</td>";
+        table.appendChild(tr);
+
+        tr = document.createElement("TR");
+        tr.innerHTML = "<td onclick=\"setNumericValue('" + input.id + "', 'limpar')\">&#10006;</td><td onclick=\"setNumericValue('" + input.id + "', 'voltar')\">&#9756;</td><td onclick=\"setNumericValue('" + input.id + "', 'ok')\">&#10004;</td>";
+        table.appendChild(tr);
+
+        keyboard.appendChild(table);
+
+        var digits = document.createElement("INPUT");
+        digits.id = input.id + "-digits";
+        digits.type = "hidden";
+
+        keyboard.appendChild(digits);
+    }
+
+    if (keyboard.style.display === "block") {
+        keyboard.style.display = "none";
+    } else {
+        keyboard.style.display = "block";
+    }
+}
+
+/**
+ * Seta valor no input via teclado numérico
+ * 
+ * @param {string} inputId
+ * @param {string} value 
+ */
+function setNumericValue(inputId, value) {
+
+    var input = document.getElementById(inputId);
+    var digits = document.getElementById(input.id + "-digits");
+    var keyboard = document.getElementById(input.id + "-keyboard");
+
+    if (value === "+/-") {
+        input.value = input.value.substring(0, 1) === "-" ? input.value.substring(1) : "-" + input.value;
+    } else if (value === "limpar") {
+        digits.value = "";
+        input.value = "";
+        keyboard.style.display = "none";
+    } else if (value === "voltar") {
+        digits.value = digits.value.substring(0, digits.value.length - 1);
+        var num = parseFloat(digits.value);
+        input.value = num.format();
+    } else if (value === "ok") {
+        keyboard.style.display = "none";
+    } else {
+        if (input.value.length > 17) {
+            return;
+        } else {
+            digits.value += value;
+            var num = parseFloat(digits.value);
+            input.value = num.format();
+        }
+    }
+}
+
+/**
+ * Configura eventos de inicialização
+ * *****************************************************************************
+ */
+window.addEventListener("scroll", function () {
+
+    var button = document.getElementById("top-button");
+
+    if (button !== null) {
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            button.style.display = "block";
+        } else {
+            button.style.display = "none";
+        }
+    }
+});
+
+window.addEventListener("load", function () {
+
+    var spinner = document.getElementById("spinner");
+
+    if (spinner !== null) {
+        spinner.style.display = "none";
+    }
+});

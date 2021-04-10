@@ -1,7 +1,7 @@
 <label for="$name-label">$label</label><br />
-<input type="search" class="input" id="$name-label" placeholder="Digite para pesquisar $label" onkeyup="autoComplete(this.id, '$name', '$name-list', '$url')" size="60" />
+<input type="search" class="ctecinf-input" id="$name-label" placeholder="Digite para pesquisar $label" onkeyup="autoComplete(this.id, '$name', '$name-list', '$url')" size="60" />
 <input type="hidden" id="$name" name="data[$name]" value="$value" />
-<div id="$name-list" class="list"></div>
+<div id="$name-list" class="ctecinf-list"></div><br />
 <script type="text/javascript">
 
     var descriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value");
@@ -9,7 +9,7 @@
 
     descriptor.set = function (val) {
         if (this.id === "$name" && val > 0) {
-            getJSON('$url', 'action=find&id=' + val, function (response) {
+            ajax('$url', 'action=find&id=' + val, function (response) {
                 document.getElementById('$name-label').value = response.label;
             });
         }

@@ -1,9 +1,11 @@
-<input type="search" class="input" id="search$className" onkeyup="filterTable('table$className', this.value)" placeholder="Pesquisar" />
-<div class="pagination"></div><br />
-<select class="table-action">
+<input type="search" class="ctecinf-input" id="search$className" onkeyup="filterTable('table$className', this.value)" placeholder="Pesquisar" />
+<div class="ctecinf-pagination"></div>
+<br />
+<select class="ctecinf-table-action" onchange="actionSelectedsIdTable(this.value, '$url'); this.selectedIndex = 0">
     <option value=""> - Com Selecionado(s) - </option>
+    <option value="delete"> Apagar </option>
 </select>
-<table class="table" id="table$className">
+<table class="ctecinf-table" id="table$className">
     <thead>
         <tr>
             <th style="width:0"><input type="checkbox" value="" onchange="toggleTable(this)" /></th><th style="width:0" onclick="sortTable('table$className', 1)">Código</th><th onclick="sortTable('table$className', 2)">Descrição</th>
@@ -11,7 +13,7 @@
     </thead>
     <tbody></tbody>
 </table>
-<div class="pagination"></div>
+<div class="ctecinf-pagination"></div>
 <script type="text/javascript">
     initPagination('table$className', $paginationMaxResults, '$url', 'search$className');
 </script>

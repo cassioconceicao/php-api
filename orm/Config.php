@@ -55,6 +55,7 @@ define("PAGINATION_MAX_RESULTS", 1000);
  * Menu do diretório <i>view</i>
  */
 define("MENU_OPTIONS", serialize(array(
-    "Clientes" => "Cliente/",
-    "Cidades" => "Municipio/"
+    //Adicione aqui o MENU gerado no "create"
+    'Cliente' => 'Cliente/',
+    'Municipio' => 'Municipio/'
 )));
