@@ -18,4 +18,4 @@
 
 require_once '../index.php';
 
-echo FormHelper::create($className::class);
+echo FormHelper::create(tableName::class);

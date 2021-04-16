@@ -27,35 +27,35 @@
  */
 class TableHelper {
 
-    private $className;
+    private $tableName;
     private $controllerPath;
     private $html;
 
     /**
      * 
-     * @param string $className Nome da classe modelo
+     * @param string $tableName Nome da classe modelo
      */
-    function __construct($className) {
+    function __construct($tableName) {
 
-        $reflection = new ReflectionClass($className);
+        $reflection = new ReflectionClass($tableName);
 
-        $this->className = $reflection->getName();
-        $this->controllerPath = CONTROLLER_PATH . $this->className . ".php";
-        $this->html = getCodeFile("table-helper.html", $this->className, $this->controllerPath);
+        $this->tableName = $reflection->getName();
+        $this->controllerPath = CONTROLLER_PATH . $this->tableName . ".php";
+        $this->html = getCodeFile("table.html", $this->tableName, $this->controllerPath);
     }
 
     /**
      * Cria assintente de tabela HTML
      * 
-     * @param string $className
+     * @param string $tableName
      * @return TableHelper
      */
-    public static function create($className) {
-        return new TableHelper($className);
+    public static function create($tableName) {
+        return new TableHelper($tableName);
     }
 
-    public function getModelClassName() {
-        return $this->className;
+    public function getTableName() {
+        return $this->tableName;
     }
 
     public function getControllerPath() {

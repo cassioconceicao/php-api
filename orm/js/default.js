@@ -159,7 +159,7 @@ function filterTable(tableId, filterValue) {
 }
 
 /**
- * Inicia paginação de uma tabela
+ * Inicia tabela
  * 
  * @param {string} tableId Identificador da tabela
  * @param {int} limit Número máximo de registro por página
@@ -167,9 +167,9 @@ function filterTable(tableId, filterValue) {
  * @param {string} filterId Identificador o campo de filtro da tabela [OPCIONAL]
  * @param {string} formURL URL para direcionar ao clicar sobre a linha da tabela passando como parâmetro <i>ID</i> do registro.[OPCIONAL]
  */
-function initPagination(tableId, limit, url, filterId, formURL) {
+function initTable(tableId, limit, url, filterId, formURL) {
 
-    ajax(url, 'action=count', function (response, message) {
+    ajax(url, 'table=' + tableId + '&action=count', function (response, message) {
 
         if (message !== null) {
             alert(message);
@@ -184,14 +184,14 @@ function initPagination(tableId, limit, url, filterId, formURL) {
                 for (var i = 0; i < div.length; i++) {
 
                     var link = document.createElement("a");
-                    link.href = "javascript:loadPage('" + tableId + "', 1, " + limit + ", '" + url + "', '" + filterId + "'" + (typeof formURL !== 'undefined' && formURL.length > 0 ? ", '" + formURL + "'" : "") + ")";
+                    link.href = "javascript:loadPageTable('" + tableId + "', 1, " + limit + ", '" + url + "', '" + filterId + "'" + (typeof formURL !== 'undefined' && formURL.length > 0 ? ", '" + formURL + "'" : "") + ")";
                     link.innerHTML = "&laquo";
                     div[i].appendChild(link);
 
                     for (var j = 1; j < pages + 1; j++) {
 
                         link = document.createElement("a");
-                        link.href = "javascript:loadPage('" + tableId + "', " + j + ", " + limit + ", '" + url + "', '" + filterId + "'" + (typeof formURL !== 'undefined' && formURL.length > 0 ? ", '" + formURL + "'" : "") + ")";
+                        link.href = "javascript:loadPageTable('" + tableId + "', " + j + ", " + limit + ", '" + url + "', '" + filterId + "'" + (typeof formURL !== 'undefined' && formURL.length > 0 ? ", '" + formURL + "'" : "") + ")";
                         link.innerHTML = j;
                         if (j === 1) {
                             link.className = "active";
@@ -200,13 +200,13 @@ function initPagination(tableId, limit, url, filterId, formURL) {
                     }
 
                     link = document.createElement("a");
-                    link.href = "javascript:loadPage('" + tableId + "', " + pages + ", " + limit + ", '" + url + "', '" + filterId + "'" + (typeof formURL !== 'undefined' && formURL.length > 0 ? ", '" + formURL + "'" : "") + ")";
+                    link.href = "javascript:loadPageTable('" + tableId + "', " + pages + ", " + limit + ", '" + url + "', '" + filterId + "'" + (typeof formURL !== 'undefined' && formURL.length > 0 ? ", '" + formURL + "'" : "") + ")";
                     link.innerHTML = "&raquo;";
                     div[i].appendChild(link);
                 }
             }
 
-            loadPage(tableId, 1, limit, url, filterId, formURL);
+            loadPageTable(tableId, 1, limit, url, filterId, formURL);
         }
     });
 }
@@ -221,7 +221,7 @@ function initPagination(tableId, limit, url, filterId, formURL) {
  * @param {string} filterId Identificador do campo de filtro da tabela [OPCIONAL]
  * @param {string} formURL URL para direcionar ao clicar sobre a linha da tabela passando como parâmetro <i>ID</i> do registro.[OPCIONAL]
  */
-function loadPage(tableId, page, limit, url, filterId, formURL) {
+function loadPageTable(tableId, page, limit, url, filterId, formURL) {
 
     var spinner = document.getElementById("spinner");
 
@@ -232,7 +232,7 @@ function loadPage(tableId, page, limit, url, filterId, formURL) {
 
     var offset = page === 1 ? 0 : (page - 1) * limit;
 
-    ajax(url, 'action=find&offset=' + offset + '&limit=' + limit, function (response, message) {
+    ajax(url, 'table=' + tableId + '&action=find&offset=' + offset + '&limit=' + limit, function (response, message) {
 
         if (message !== null) {
             alert(message);
@@ -283,12 +283,13 @@ function toggleTable(source) {
 }
 
 /**
- * * AJAX com ID's selecionados no checkbox da table
+ * AJAX com arrays dos [id] selecionados no checkbox da table
  * 
+ * @param {string} tableId Tabela
  * @param {string} action Ação no controller, "delete", ...
  * @param {string} url URL do controller
  */
-function actionSelectedsIdTable(action, url) {
+function actionTable(tableId, action, url) {
 
     if (action.length > 0) {
 
@@ -297,7 +298,7 @@ function actionSelectedsIdTable(action, url) {
 
         for (var i = 0; i < checkboxes.length; i++) {
             if (checkboxes[i].checked) {
-                params[params.length] = "selecteds_id[]=" + checkboxes[i].value;
+                params[params.length] = "id[]=" + checkboxes[i].value;
                 checkboxes[i].checked = false;
             }
         }
@@ -305,7 +306,7 @@ function actionSelectedsIdTable(action, url) {
         if (params.length === 0) {
             alert("Nenhum registro selecionado.");
         } else {
-            ajax(url, "action=" + action + "&" + params.join("&"), function (response, message) {
+            ajax(url, "table=" + tableId + "&action=" + action + "&" + params.join("&"), function (response, message) {
                 alert(message);
             });
         }
@@ -340,13 +341,14 @@ function closeMenu() {
  * @param {string} fieldId Identificador do INPUT Value do campo ID da coluna, tipo hidden.
  * @param {string} targetId Identificador da DIV onde vai a lista de resultados para selecionar.
  * @param {string} url URL para consulta AJAX.
+ * @param {string} table Nome da tabela no banco de dados.
  */
-function autoComplete(searchId, fieldId, targetId, url) {
+function autoComplete(searchId, fieldId, targetId, url, table) {
 
     var search = document.getElementById(searchId);
     var target = document.getElementById(targetId);
 
-    ajax(url, 'action=find&term=' + search.value + '&limit=' + 8, function (response, message) {
+    ajax(url, 'table=' + table + '&action=find&term=' + search.value + '&limit=' + 8, function (response, message) {
 
         if (message !== null) {
             target.innerHTML = "";
@@ -407,7 +409,7 @@ function initForm(formId) {
 
     if (document.getElementById("id").value > 0) {
 
-        ajax(form.action, 'action=find&id=' + document.getElementById("id").value, function (response, message) {
+        ajax(form.action, 'table=' + formId + '&action=find&id=' + document.getElementById("id").value, function (response, message) {
 
             if (message !== null) {
                 alert(message);
@@ -466,7 +468,7 @@ function topScroll() {
  */
 function numericKeyboard(input) {
 
-    var keyboard = document.getElementById(input.id + "-keyboard");
+    var keyboard = document.getElementById(input.id + "_keyboard");
 
     if (keyboard.innerHTML === "") {
 
@@ -495,7 +497,7 @@ function numericKeyboard(input) {
         keyboard.appendChild(table);
 
         var digits = document.createElement("INPUT");
-        digits.id = input.id + "-digits";
+        digits.id = input.id + "_digits";
         digits.type = "hidden";
 
         keyboard.appendChild(digits);
@@ -517,8 +519,8 @@ function numericKeyboard(input) {
 function setNumericValue(inputId, value) {
 
     var input = document.getElementById(inputId);
-    var digits = document.getElementById(input.id + "-digits");
-    var keyboard = document.getElementById(input.id + "-keyboard");
+    var digits = document.getElementById(input.id + "_digits");
+    var keyboard = document.getElementById(input.id + "_keyboard");
 
     if (value === "+/-") {
         input.value = input.value.substring(0, 1) === "-" ? input.value.substring(1) : "-" + input.value;
@@ -549,7 +551,7 @@ function setNumericValue(inputId, value) {
  */
 window.addEventListener("scroll", function () {
 
-    var button = document.getElementById("top-button");
+    var button = document.getElementById("top_button");
 
     if (button !== null) {
         if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {

@@ -83,7 +83,7 @@ if (isset($_GET["create"])) {
 
             if (!file_exists($fileName)) {
                 $handle = fopen($fileName, "w");
-                fwrite($handle, str_replace("\$year", date("Y"), str_replace("\$className", "{$name}", file_get_contents(ORM_PATH . "code/model.php"))));
+                fwrite($handle, str_replace("\$year", date("Y"), str_replace("tableName", "{$name}", file_get_contents(ORM_PATH . "code/model.php"))));
                 chmod($fileName, 0777);
                 fclose($handle);
             }
@@ -92,7 +92,7 @@ if (isset($_GET["create"])) {
 
             if (!file_exists($fileName)) {
                 $handle = fopen($fileName, "w");
-                fwrite($handle, str_replace("\$year", date("Y"), str_replace("\$className", "{$name}", file_get_contents(ORM_PATH . "code/controller.php"))));
+                fwrite($handle, str_replace("\$year", date("Y"), str_replace("tableName", "{$name}", file_get_contents(ORM_PATH . "code/controller.php"))));
                 chmod($fileName, 0777);
                 fclose($handle);
             }
@@ -105,14 +105,14 @@ if (isset($_GET["create"])) {
 
                 if (!file_exists($fileName . "index.php")) {
                     $handle = fopen($fileName . "index.php", "w");
-                    fwrite($handle, str_replace("\$year", date("Y"), str_replace("\$className", "{$name}", file_get_contents(ORM_PATH . "code/view-list.php"))));
+                    fwrite($handle, str_replace("\$year", date("Y"), str_replace("tableName", "{$name}", file_get_contents(ORM_PATH . "code/view-list.php"))));
                     chmod($fileName . "index.php", 0777);
                     fclose($handle);
                 }
 
                 if (!file_exists($fileName . "form.php")) {
                     $handle = fopen($fileName . "form.php", "w");
-                    fwrite($handle, str_replace("\$year", date("Y"), str_replace("\$className", "{$name}", file_get_contents(ORM_PATH . "code/view-form.php"))));
+                    fwrite($handle, str_replace("\$year", date("Y"), str_replace("tableName", "{$name}", file_get_contents(ORM_PATH . "code/view-form.php"))));
                     chmod($fileName . "form.php", 0777);
                     fclose($handle);
                 }
@@ -255,7 +255,7 @@ function getMenu() {
     return $html;
 }
 
-function getCodeFile($file, $className = false, $url = false) {
+function getCodeFile($file, $tableName = false, $url = false) {
 
     $str = file_get_contents(ORM_PATH . "code/{$file}");
 
@@ -263,16 +263,16 @@ function getCodeFile($file, $className = false, $url = false) {
         return false;
     } else {
 
-        if ($className) {
-            $str = str_replace("\$className", $className, $str);
+        if ($tableName) {
+            $str = str_replace("tableName", $tableName, $str);
         }
 
         if ($url) {
-            $str = str_replace("\$url", $url, $str);
+            $str = str_replace("url", $url, $str);
         }
 
         $str = str_replace("\$title", TITLE, $str);
-        $str = str_replace("\$paginationMaxResults", PAGINATION_MAX_RESULTS, $str);
+        $str = str_replace("limit", PAGINATION_MAX_RESULTS, $str);
 
         return $str;
     }

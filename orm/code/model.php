@@ -18,15 +18,15 @@
  */
 
 /**
- * Description of $className
+ * Description of tableName
  *
  * @author Cássio Conceição
  * @copyright (c) $year, Cássio Conceição
  * @see ctecinf.com.br
  */
-class $className extends Model {
+class tableName extends Model {
 
     public function __toString() {
-        return "$className ID[" . $this->getId() . "]";
+        return "tableName ID[" . $this->getId() . "]";
     }
 }

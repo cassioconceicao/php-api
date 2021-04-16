@@ -30,7 +30,7 @@ switch (getAction()) {
 
                 $list = array();
 
-                foreach ($className::find(getTerm(), getOffSet(), getMaxResults()) as $row) {
+                foreach (tableName::find(getTerm(), getOffSet(), getMaxResults()) as $row) {
                     $list[] = array(
                         "value" => $row->getId(),
                         "label" => strval($row),
@@ -41,7 +41,7 @@ switch (getAction()) {
                 $return = json_encode($list);
             } else {
 
-                $obj = $className::findById(getId());
+                $obj = tableName::findById(getId());
                 if (!$obj) {
                     $return = json_encode(array("message" => "Registro não encontrado."));
                 } else {
@@ -57,7 +57,7 @@ switch (getAction()) {
     case ACTION_SAVE:
 
         try {
-            $obj = new $className();
+            $obj = new tableName();
             $obj->setData(getData());
             $return = $obj->save() ? json_encode(array("message" => "Registro salvo com sucesso.")) : json_encode(array("message" => "Algo deu errado, tente novamente."));
         } catch (Exception $ex) {
@@ -74,7 +74,7 @@ switch (getAction()) {
 
                 foreach (getSelectedsId() as $id) {
 
-                    $obj = $className::findById($id);
+                    $obj = tableName::findById($id);
 
                     if (!$obj || !$obj->delete()) {
                         throw new Exception("Registro(s) não encontrado(s).");
@@ -84,7 +84,7 @@ switch (getAction()) {
                 $return = json_encode(array("message" => "Registro(s) apagado(s) com sucesso."));
             } else {
 
-                $obj = $className::findById(getId());
+                $obj = tableName::findById(getId());
 
                 if (!$obj || !$obj->delete()) {
                     throw new Exception("Registro não encontrado.");
@@ -101,7 +101,7 @@ switch (getAction()) {
     case ACTION_COUNT:
 
         try {
-            $return = json_encode(array("total" => $className::count()));
+            $return = json_encode(array("total" => tableName::count()));
         } catch (Exception $ex) {
             $return = json_encode(array("message" => $ex->getMessage()));
         }

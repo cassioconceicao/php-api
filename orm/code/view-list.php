@@ -18,4 +18,4 @@
 
 require_once '../index.php';
 
-echo TableHelper::create($className::class);
+echo TableHelper::create(tableName::class);
