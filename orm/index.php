@@ -232,11 +232,10 @@ function getHTMLHead($charset = "UTF-8") {
     $html .= "<meta charset=\"{$charset}\" />\n";
     $html .= "<title>" . TITLE . "</title>\n";
     $html .= "<meta name=\"viewport\" content=\"width=device-width, initial-scale=0.70, maximum-scale=1.0, minimum-scale=0.70\" />\n";
-    $html .= "<link type=\"text/css\" rel=\"stylesheet\" href=\"" . ORM_PATH . "css/default.css\"/>\n";
+    $html .= "<link type=\"text/css\" rel=\"stylesheet\" href=\"../../../../jquery/css/cupertino/jquery-ui.min.css\"/>\n";
     $html .= "<script type=\"text/javascript\" src=\"" . ORM_PATH . "js/default.js\"></script>\n";
     $html .= "</head>\n\n";
-    $html .= getCodeFile("top-button.html");
-    $html .= getCodeFile("spinner.html");
+    //$html .= getCodeFile("spinner.html");
 
     return $html;
 }

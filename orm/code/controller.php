@@ -31,11 +31,15 @@ switch (getAction()) {
                 $list = array();
 
                 foreach (tableName::find(getTerm(), getOffSet(), getMaxResults()) as $row) {
-                    $list[] = array(
-                        "value" => $row->getId(),
-                        "label" => strval($row),
-                        "data" => $row->getData()
-                    );
+
+                    $data["value"] = $row->getId();
+                    $data["label"] = strval($row);
+
+                    foreach ($row->getData() as $key => $value) {
+                        $data[$key] = $value;
+                    }
+
+                    $list[] = $data;
                 }
 
                 $return = json_encode($list);
@@ -89,7 +93,7 @@ switch (getAction()) {
                 if (!$obj || !$obj->delete()) {
                     throw new Exception("Registro não encontrado.");
                 }
-                
+
                 $return = json_encode(array("message" => "Registro apagado com sucesso."));
             }
         } catch (Exception $ex) {
